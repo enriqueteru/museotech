@@ -1,0 +1,137 @@
+services:
+  db:
+    image: mariadb:11
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: ${WORDPRESS_DB_NAME:-wordpress}
+      MARIADB_USER: ${WORDPRESS_DB_USER:-wordpress}
+      MARIADB_PASSWORD: ${WORDPRESS_DB_PASSWORD:-wordpress}
+      MARIADB_ROOT_PASSWORD: ${WORDPRESS_DB_ROOT_PASSWORD:-root}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  wordpress:
+    image: wordpress:php8.2-apache
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${WORDPRESS_PORT:-8080}:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME:-wordpress}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER:-wordpress}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD:-wordpress}
+      WORDPRESS_DEBUG: ${WORDPRESS_DEBUG:-1}
+    volumes:
+      - wordpress_data:/var/www/html
+      - ./plugins/plugin-skeleton:/var/www/html/wp-content/plugins/plugin-skeleton
+      - ./plugins/museotech-core:/var/www/html/wp-content/plugins/museotech-core
+      - ./themes/museotech:/var/www/html/wp-content/themes/museotech
+
+  wordpress-xdebug:
+    build:
+      context: .
+      dockerfile: docker/wordpress-xdebug.Dockerfile
+    profiles:
+      - xdebug
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${WORDPRESS_XDEBUG_PORT:-8081}:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME:-wordpress}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER:-wordpress}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD:-wordpress}
+      WORDPRESS_DEBUG: ${WORDPRESS_DEBUG:-1}
+      XDEBUG_MODE: ${XDEBUG_MODE:-debug,develop}
+      XDEBUG_CONFIG: ${XDEBUG_CONFIG:-client_host=host.docker.internal client_port=9003}
+    volumes:
+      - wordpress_data:/var/www/html
+      - ./plugins/plugin-skeleton:/var/www/html/wp-content/plugins/plugin-skeleton
+      - ./plugins/museotech-core:/var/www/html/wp-content/plugins/museotech-core
+      - ./themes/museotech:/var/www/html/wp-content/themes/museotech
+
+  wpcli:
+    image: wordpress:cli-php8.2
+    profiles:
+      - tools
+    depends_on:
+      db:
+        condition: service_healthy
+      wordpress:
+        condition: service_started
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME:-wordpress}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER:-wordpress}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD:-wordpress}
+      WP_URL: ${WP_URL:-http://localhost:8080}
+      WP_TITLE: ${WP_TITLE:-WordPress local}
+      WP_ADMIN_USER: ${WP_ADMIN_USER:-admin}
+      WP_ADMIN_PASSWORD: ${WP_ADMIN_PASSWORD:-admin}
+      WP_ADMIN_EMAIL: ${WP_ADMIN_EMAIL:-admin@example.com}
+      WP_CLI_CACHE_DIR: /tmp/wp-cli-cache
+    volumes:
+      - wordpress_data:/var/www/html
+      - ./plugins/plugin-skeleton:/var/www/html/wp-content/plugins/plugin-skeleton
+      - ./plugins/museotech-core:/var/www/html/wp-content/plugins/museotech-core
+      - ./themes/museotech:/var/www/html/wp-content/themes/museotech
+      - ./docker:/docker:ro
+    user: "0:0"
+    working_dir: /var/www/html
+    entrypoint: ["wp"]
+
+  node:
+    image: node:22-bookworm
+    profiles:
+      - tools
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace
+      - plugin_node_modules:/workspace/plugins/plugin-skeleton/node_modules
+    ports:
+      - "${VITE_PORT:-5173}:5173"
+
+  composer:
+    image: composer:2
+    profiles:
+      - tools
+    working_dir: /workspace/plugins/plugin-skeleton
+    volumes:
+      - ./:/workspace
+    entrypoint: ["composer"]
+
+  adminer:
+    image: adminer:4
+    profiles:
+      - observability
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${ADMINER_PORT:-8082}:8080"
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    profiles:
+      - observability
+    restart: unless-stopped
+    ports:
+      - "${MAILHOG_SMTP_PORT:-1025}:1025"
+      - "${MAILHOG_UI_PORT:-8025}:8025"
+
+volumes:
+  db_data:
+  wordpress_data:
+  plugin_node_modules:

@@ -1,0 +1,14 @@
+<?php
+/*
+Template Name: Museotech: Legal
+Template Post Type: page
+*/
+
+get_header();
+?>
+<main id="main-content">
+    <?php while (have_posts()) : the_post(); ?>
+        <?php get_template_part('template-parts/content/page'); ?>
+    <?php endwhile; ?>
+</main>
+<?php get_footer(); ?>
