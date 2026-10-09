@@ -1,0 +1,63 @@
+.consent-banner-wrapper .consent-btn,
+.consent-dialog-overlay .consent-btn {
+    min-height: 48px;
+    padding: 0 22px;
+    border-color: #111;
+    border-radius: 999px;
+    background: #111;
+    color: #fff;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.consent-banner-wrapper .consent-btn:hover,
+.consent-dialog-overlay .consent-btn:hover {
+    border-color: #111;
+    background: #fff;
+    color: #111;
+}
+
+.consent-banner-wrapper .consent-btn:focus-visible,
+.consent-dialog-overlay .consent-btn:focus-visible {
+    outline: 2px solid #111;
+    outline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+    .consent-banner-wrapper {
+        left: 16px !important;
+        right: 16px !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        width: auto !important;
+        max-width: calc(100vw - 32px) !important;
+        box-sizing: border-box !important;
+    }
+
+    .consent-banner-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    .consent-banner-text,
+    .consent-banner-title,
+    .consent-banner-desc,
+    .consent-banner-links,
+    .consent-banner-actions,
+    .consent-banner-wrapper .consent-btn {
+        max-width: 100%;
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .consent-banner-actions {
+        flex-wrap: wrap;
+    }
+
+    .consent-banner-wrapper .consent-btn {
+        min-height: 44px;
+        white-space: normal;
+    }
+}

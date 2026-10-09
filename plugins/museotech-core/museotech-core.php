@@ -132,8 +132,8 @@ function museotech_core_contact_form(): string
                 <input id="museotech-contact-email" name="email" type="email" placeholder="<?php esc_attr_e('Email', 'museotech-core'); ?>" autocomplete="email" required>
             </p>
             <p class="museotech-contact-form__field">
-                <label class="screen-reader-text" for="museotech-contact-budget"><?php esc_html_e('Presupuesto', 'museotech-core'); ?></label>
-                <input id="museotech-contact-budget" name="budget" type="text" placeholder="<?php esc_attr_e('Presupuesto', 'museotech-core'); ?>" inputmode="text">
+                <label class="screen-reader-text" for="museotech-contact-budget"><?php esc_html_e('Asunto', 'museotech-core'); ?></label>
+                <input id="museotech-contact-budget" name="budget" type="text" placeholder="<?php esc_attr_e('Asunto', 'museotech-core'); ?>" inputmode="text">
             </p>
             <p class="museotech-contact-form__field museotech-contact-form__field--message">
                 <label class="screen-reader-text" for="museotech-contact-message"><?php esc_html_e('Mensaje', 'museotech-core'); ?></label>
@@ -148,8 +148,7 @@ function museotech_core_contact_form(): string
             </label>
         </p>
         <div class="museotech-contact-form__submit-row">
-            <button type="submit"><?php esc_html_e('Enviar', 'museotech-core'); ?></button>
-            <span aria-hidden="true">→</span>
+            <button class="ui-button" type="submit"><?php esc_html_e('Enviar', 'museotech-core'); ?></button>
         </div>
     </form>
     <?php
@@ -194,7 +193,7 @@ function museotech_core_handle_contact(): void
 
     $subject = __('Nuevo mensaje de "Museo tech"', 'museotech-core');
     $body = sprintf(
-        "Nombre: %1$s\nEmpresa: %2$s\nEmail: %3$s\nPresupuesto: %4$s\n\nMensaje:\n%5$s",
+        "Nombre: %1$s\nEmpresa: %2$s\nEmail: %3$s\nAsunto: %4$s\n\nMensaje:\n%5$s",
         $name,
         $company !== '' ? $company : __('No indicado', 'museotech-core'),
         $email,
@@ -210,3 +209,44 @@ function museotech_core_handle_contact(): void
 }
 add_action('admin_post_nopriv_museotech_core_contact', 'museotech_core_handle_contact');
 add_action('admin_post_museotech_core_contact', 'museotech_core_handle_contact');
+
+function museotech_core_enqueue_cookie_consent(): void
+{
+    $sdk_path = __DIR__ . '/assets/cookies-compliance/consent.min.js';
+    if (! file_exists($sdk_path)) {
+        return;
+    }
+
+    $version = '1.5.3-' . (string) filemtime($sdk_path);
+    wp_enqueue_script(
+        'museotech-core-cookie-consent',
+        plugins_url('assets/cookies-compliance/consent.min.js', __FILE__),
+        [],
+        $version,
+        false
+    );
+
+    $style_path = __DIR__ . '/assets/cookies-compliance/consent-overrides.css';
+    wp_enqueue_style(
+        'museotech-core-cookie-consent',
+        plugins_url('assets/cookies-compliance/consent-overrides.css', __FILE__),
+        [],
+        file_exists($style_path) ? (string) filemtime($style_path) : $version
+    );
+}
+add_action('wp_enqueue_scripts', 'museotech_core_enqueue_cookie_consent', 1);
+
+function museotech_core_cookie_consent_script_tag(string $tag, string $handle, string $src): string
+{
+    if ($handle !== 'museotech-core-cookie-consent') {
+        return $tag;
+    }
+
+    return sprintf(
+        '<script src="%1$s" data-config="%2$s" id="%3$s-js"></script>' . "\n",
+        esc_url($src),
+        esc_url(plugins_url('consent.json', __FILE__)),
+        esc_attr($handle)
+    );
+}
+add_filter('script_loader_tag', 'museotech_core_cookie_consent_script_tag', 10, 3);

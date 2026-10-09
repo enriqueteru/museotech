@@ -1,9 +1,9 @@
 :root {
-    --contact-paper: #000;
-    --contact-ink: #fff;
+    --contact-paper: #fff;
+    --contact-ink:  #000;
     --contact-muted: #747474;
     --contact-line: #747474;
-    --contact-accent: #ff4c00;
+    --contact-accent: #000;
 }
 
 html:has(.contact-page),
@@ -16,7 +16,7 @@ body:has(.contact-page) {
 
 body:has(.contact-page) {
     overflow-x: hidden;
-    font-family: "Times New Roman", serif;
+    font-family: var(--font-satoshi)
 }
 
 body:has(.contact-page) .contact-page__announcement {
@@ -32,73 +32,6 @@ body:has(.contact-page) .contact-page__announcement {
     text-transform: uppercase;
 }
 
-body:has(.contact-page) .site-header--contact {
-    position: relative;
-    inset: auto;
-    min-height: 61px;
-    padding: 0 32px;
-    border-bottom: 1px solid var(--contact-ink);
-    color: var(--contact-ink);
-}
-
-.site-header--contact .site-title {
-    color: inherit;
-    font-family: "Times New Roman", serif;
-    font-size: 16px;
-    font-weight: 700;
-    text-transform: lowercase;
-}
-
-.contact-header__branding {
-    display: flex;
-    align-items: center;
-    justify-self: center;
-    color: inherit;
-    font-size: 14px;
-    text-decoration: none;
-    text-transform: uppercase;
-}
-
-.contact-header__branding svg {
-    width: 92px;
-    height: 50px;
-    stroke: currentColor;
-    stroke-linecap: round;
-}
-
-.contact-header__branding .contact-header__star {
-    fill: currentColor;
-    stroke: none;
-}
-
-.site-header--contact .site-menu-toggle {
-    display: flex;
-    width: auto;
-    height: auto;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 0;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    color: inherit;
-    font-family: "Times New Roman", serif;
-    font-size: 14px;
-    text-transform: uppercase;
-}
-
-.site-header--contact .site-menu-toggle:hover,
-.site-header--contact .site-menu-toggle:focus-visible {
-    background: transparent;
-    color: var(--contact-accent);
-}
-
-.site-header--contact .site-menu-toggle__lines,
-.site-header--contact .site-menu-toggle__lines::before,
-.site-header--contact .site-menu-toggle__lines::after {
-    width: 14px;
-}
-
 .contact-page {
     min-height: calc(100vh - 99px);
     background: var(--contact-paper);
@@ -106,13 +39,14 @@ body:has(.contact-page) .site-header--contact {
 }
 
 .contact-page__masthead {
+    margin-top: 60px;
     overflow: hidden;
 }
 
 .contact-page__marquee {
     width: 100%;
     overflow: hidden;
-    padding-top: 22px;
+    padding-top: 60px;
 }
 
 .contact-page__marquee-track {
@@ -126,6 +60,7 @@ body:has(.contact-page) .site-header--contact {
     flex: none;
     padding-right: 0.12em;
     color: var(--contact-accent);
+    font-family: var(--font-america);
     font-size: clamp(92px, 9vw, 132px);
     font-weight: 700;
     line-height: 0.95;
@@ -154,7 +89,7 @@ body:has(.contact-page) .site-header--contact {
     max-width: 15ch;
     margin: 0;
     color: var(--contact-ink);
-    font: 400 40px/1.5 "Times New Roman", serif;
+    font: 400 32px/1.1 var(--font-america);
 }
 
 .contact-page__item {
@@ -215,7 +150,9 @@ body:has(.contact-page) .site-header--contact {
 .museotech-contact-form__fields {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 10px;
+    grid-template-rows: auto;
+    grid-auto-flow: row;
+    column-gap: 24px;
 }
 
 .museotech-contact-form__field {
@@ -226,6 +163,7 @@ body:has(.contact-page) .site-header--contact {
 .museotech-contact-form__field input,
 .museotech-contact-form__field textarea {
     display: block;
+    box-sizing: border-box;
     width: 100%;
     min-height: 58px;
     padding: 8px 10px;
@@ -235,8 +173,9 @@ body:has(.contact-page) .site-header--contact {
     outline: none;
     background: transparent;
     color: var(--contact-ink);
-    font-family: Arial, sans-serif;
+    font-family: var(--font-satoshi);
     font-size: 24px;
+    transition: border-color 160ms ease;
 }
 
 .museotech-contact-form__field textarea {
@@ -248,6 +187,11 @@ body:has(.contact-page) .site-header--contact {
 .museotech-contact-form__field textarea::placeholder {
     color: var(--contact-muted);
     opacity: 1;
+}
+
+.museotech-contact-form__field input:hover,
+.museotech-contact-form__field textarea:hover {
+    border-bottom-color: #a0a0a0;
 }
 
 .museotech-contact-form__field input:focus,
@@ -262,7 +206,7 @@ body:has(.contact-page) .site-header--contact {
 .museotech-contact-form__consent {
     margin: -5px 0 8px;
     color: var(--contact-muted);
-    font-family: Arial, sans-serif;
+    font-family: var(--font-satoshi);
     font-size: 11px;
     line-height: 1.4;
 }
@@ -297,7 +241,7 @@ body:has(.contact-page) .site-header--contact {
     background: transparent;
     color: var(--contact-ink);
     cursor: pointer;
-    font: 700 clamp(44px, 4.2vw, 60px)/1 "Times New Roman", serif;
+    font: 700 clamp(44px, 4.2vw, 60px)/1 var(--font-satoshi);
     text-transform: uppercase;
 }
 
@@ -337,32 +281,6 @@ body:has(.contact-page) .site-footer {
         font-size: 10px;
     }
 
-    body:has(.contact-page) .site-header--contact {
-        min-height: 58px;
-        padding-inline: 18px;
-    }
-
-    .contact-header__branding span {
-        display: none;
-    }
-
-    .contact-header__branding svg {
-        width: 64px;
-        height: 40px;
-    }
-
-    .site-header--contact .site-menu-toggle__label {
-        display: inline;
-        font-size: 10px;
-    }
-
-    .site-header--contact .site-menu-toggle {
-        position: absolute;
-        top: 50%;
-        right: 18px;
-        transform: translateY(-50%);
-    }
-
     .contact-page__marquee {
         padding-top: 16px;
     }
@@ -381,16 +299,12 @@ body:has(.contact-page) .site-footer {
     }
 
     .contact-page__intro {
-        font-size: clamp(34px, 9vw, 48px);
+        font-size: clamp(20px, 9vw, 48px);
         line-height: 1.2;
     }
 }
 
 @media (max-width: 520px) {
-    .site-header--contact .site-title {
-        font-size: 14px;
-    }
-
     .contact-page__contact-info,
     .museotech-contact-form__fields {
         grid-template-columns: 1fr;

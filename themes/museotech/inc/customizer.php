@@ -93,9 +93,6 @@ function museotech_customizer_register(WP_Customize_Manager $customize): void
             'title' => __(' noticias', 'museotech'),
             'fields' => [
                 'news_visible' => [__('Mostrar sección', 'museotech'), 'checkbox'],
-                'news_eyebrow' => [__('Etiqueta', 'museotech'), 'text'],
-                'news_title' => [__('Titular', 'museotech'), 'text'],
-                'news_description' => [__('Descripción', 'museotech'), 'textarea'],
                 'news_count' => [__('Entradas visibles', 'museotech'), 'number'],
                 'news_button_label' => [__('Texto del enlace', 'museotech'), 'text'],
                 'news_button_url' => [__('Destino del enlace', 'museotech'), 'url'],
@@ -202,6 +199,19 @@ function museotech_archive_page_size(WP_Query $query): void
     $count = museotech_option('archive_' . $post_type . '_count');
     if ($count) {
         $query->set('posts_per_page', museotech_sanitize_count($count));
+    }
+
+    if ($post_type === 'repositorios' && isset($_GET['formato'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $format_slug = sanitize_title(wp_unslash($_GET['formato'])); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $format = $format_slug !== '' ? get_term_by('slug', $format_slug, 'formato') : false;
+
+        if ($format && ! is_wp_error($format) && (int) $format->count > 0) {
+            $query->set('tax_query', [[
+                'taxonomy' => 'formato',
+                'field' => 'slug',
+                'terms' => $format->slug,
+            ]]);
+        }
     }
 }
 add_action('pre_get_posts', 'museotech_archive_page_size');

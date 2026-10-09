@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "policyVersion": "2026-10-08",
+  "locale": {
+    "default": "es",
+    "autoDetect": true
+  },
+  "policy": {
+    "privacyUrl": "/politicas-de-privacidad/",
+    "cookiesUrl": "/politica-de-cookies/"
+  },
+  "consent": {
+    "maxAgeDays": 365,
+    "renewOnPolicyChange": true,
+    "reloadOnRevoke": "auto"
+  },
+  "gpc": {
+    "enabled": true,
+    "respectSignal": true,
+    "mode": "auto-reject",
+    "categories": ["analytics", "marketing"]
+  },
+  "ui": {
+    "position": "bottom",
+    "banner": {
+      "title": "Tu privacidad, bajo tu control",
+      "description": "Usamos cookies necesarias para el funcionamiento del sitio. Puedes aceptar, rechazar o configurar las cookies opcionales.",
+      "accept": "Aceptar todas",
+      "reject": "Rechazar opcionales",
+      "configure": "Configurar",
+      "cookiesPolicy": "Política de cookies",
+      "privacyPolicy": "Política de privacidad"
+    },
+    "preferences": {
+      "title": "Preferencias de cookies",
+      "subtitle": "Las cookies necesarias no se pueden desactivar. Elige si permites las finalidades opcionales.",
+      "save": "Guardar selección",
+      "acceptAll": "Aceptar todas",
+      "rejectAll": "Rechazar opcionales"
+    },
+    "floatingBadge": {
+      "enabled": true,
+      "position": "bottom-left",
+      "icon": "cookie",
+      "label": "Cookies",
+      "ariaLabel": "Gestionar preferencias de cookies",
+      "showLabel": true,
+      "visibility": "after-consent"
+    }
+  },
+  "categories": {
+    "necessary": {
+      "required": true,
+      "default": true,
+      "label": "Necesarias",
+      "description": "Imprescindibles para que las funciones básicas del sitio estén disponibles."
+    },
+    "analytics": {
+      "required": false,
+      "default": false,
+      "label": "Analítica",
+      "description": "Medición agregada del uso del sitio, si se incorpora un servicio de analítica."
+    },
+    "marketing": {
+      "required": false,
+      "default": false,
+      "label": "Contenido de terceros",
+      "description": "Contenido o servicios externos que requieran consentimiento, si se incorporan."
+    }
+  }
+}

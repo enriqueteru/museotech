@@ -29,13 +29,13 @@
             containerRows.forEach((row, rowIndex) => {
                 const blocks = [...row.querySelectorAll('.home-scroll-transition__block')];
                 const order = window.gsap.utils.shuffle(blocks.map((_, index) => index));
-                const rowDelay = 0.16 * (containerRows.length - rowIndex - 1);
+                const rowDelay = 0.08 * (containerRows.length - rowIndex - 1);
 
+                window.gsap.set(blocks, { opacity: isTop ? 1 : 0, clearProps: 'transform' });
                 window.ScrollTrigger.create({
                     trigger: scene,
-                    start: 'top top',
+                    start: 'top bottom',
                     end: 'bottom bottom',
-                    scrub: true,
                     onUpdate: (trigger) => {
                         const progress = Math.max(0, Math.min(1, trigger.progress - rowDelay));
                         blocks.forEach((block, index) => {

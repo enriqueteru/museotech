@@ -29,13 +29,12 @@ class Museotech_Overlay_Menu_Walker extends Walker_Nav_Menu
 
         $title = apply_filters('the_title', $item->title, $item->ID);
         $item_output = sprintf(
-            '<li class="%1$s" style="--menu-index:%2$d"><span class="site-menu__index" aria-hidden="true">%3$s</span><a class="site-menu__link"%4$s><span class="site-menu__name">%5$s</span><span class="site-menu__action" aria-hidden="true">[%6$s]</span></a>',
+            '<li class="%1$s" style="--menu-index:%2$d"><span class="site-menu__index" aria-hidden="true">%3$s</span><a class="site-menu__link"%4$s><span class="site-menu__name">%5$s</span></a>',
             esc_attr($class_names),
             $this->item_index,
             esc_html($index),
             $attributes,
-            esc_html($title),
-            esc_html__('explorar', 'museotech')
+            esc_html($title)
         );
 
         $output .= apply_filters('walker_nav_menu_start_el', $item_output, $item, $depth, $args);

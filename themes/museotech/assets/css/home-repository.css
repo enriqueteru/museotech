@@ -1,0 +1,79 @@
+.home-repository {
+    overflow: hidden;
+}
+
+.home-repository__content {
+    position: relative;
+    grid-template-areas: "visual copy";
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+    gap: clamp(32px, 5vw, 76px);
+}
+
+.home-repository__copy {
+    grid-area: copy;
+    position: relative;
+    z-index: 2;
+}
+
+.home-repository__visual {
+    grid-area: visual;
+    position: relative;
+    display: grid;
+    min-width: 0;
+    min-height: 0;
+    aspect-ratio: 1;
+    place-items: center;
+    overflow: visible;
+    border-radius: 0;
+    background: transparent;
+}
+
+.home-repository__model {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 720px);
+    aspect-ratio: 1;
+    cursor: grab;
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.home-repository__model.is-dragging {
+    cursor: grabbing;
+}
+
+.home-repository__model:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 4px;
+}
+
+.home-repository__model canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+}
+
+@media (max-width: 980px) {
+    .home-repository__content {
+        grid-template-areas: "visual" "copy";
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+    }
+
+    .home-repository__copy {
+        max-width: 650px;
+    }
+
+    .home-repository__visual {
+        width: 100%;
+        margin-right: 0;
+        aspect-ratio: 1;
+    }
+
+    .home-repository__model {
+        width: min(100%, 700px);
+    }
+}

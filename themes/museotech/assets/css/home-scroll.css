@@ -1,7 +1,7 @@
 .home-scroll-transition {
     position: relative;
-    height: 180svh;
-    min-height: 820px;
+    height: 135svh;
+    min-height: 720px;
     isolation: isolate;
 }
 
@@ -28,7 +28,7 @@
     z-index: 1;
     inset-inline: 0;
     display: grid;
-    height: min(360px, 38svh);
+    height: min(300px, 30svh);
     pointer-events: none;
 }
 
@@ -48,22 +48,23 @@
 
 .home-scroll-transition__block {
     min-width: 0;
-    height: 100%;
-    background: #111;
+    height: calc(100% + 1px);
+    background: #fff;
+    will-change: opacity;
 }
 
 .home-scroll-transition__rows--bottom .home-scroll-transition__block {
-    background: #f3f1eb;
+    background: #fff;
 }
 
 @media (max-width: 700px) {
     .home-scroll-transition {
-        height: 155svh;
-        min-height: 680px;
+        height: 125svh;
+        min-height: 620px;
     }
 
     .home-scroll-transition__rows {
-        height: min(280px, 34svh);
+        height: min(240px, 28svh);
     }
 
     .home-scroll-transition__row {
@@ -79,5 +80,9 @@
 
     .home-scroll-transition__rows {
         display: none;
+    }
+
+    .home-scroll-transition__block {
+        will-change: auto;
     }
 }

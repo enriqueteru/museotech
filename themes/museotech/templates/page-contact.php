@@ -33,10 +33,6 @@ get_header();
                         <h2><?php esc_html_e('Contacto', 'museotech'); ?></h2>
                         <a href="mailto:info@museotech.org">info@museotech.org</a>
                     </div>
-                    <div class="contact-page__item">
-                        <h2><?php esc_html_e('Ámbito', 'museotech'); ?></h2>
-                        <p><?php esc_html_e('Cultura — patrimonio — tecnología', 'museotech'); ?></p>
-                    </div>
                 </div>
             </div>
             <div class="contact-page__form-column">

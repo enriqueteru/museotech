@@ -5,5 +5,5 @@
     <h2><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
     <?php the_excerpt(); ?>
     <p><?php echo esc_html((string) museotech_field('autores')); ?></p>
-    <a href="<?php the_permalink(); ?>"><?php esc_html_e('Ver recurso', 'museotech'); ?></a>
+    <a class="ui-button ui-button--compact" href="<?php the_permalink(); ?>"><?php esc_html_e('Ver recurso', 'museotech'); ?></a>
 </article>

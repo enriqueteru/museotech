@@ -5,10 +5,8 @@ function museotech_customizer_defaults(): array
     return [
         'hero_visible' => true,
         'hero_title' => 'MUSEOTECH',
-        'hero_tagline' => 'Conocimiento al servicio del patrimonio cultural',
-        'hero_description' => 'Museotech es un Proyecto de Investigación Precompetitivo financiado por la Universidad Internacional de La Rioja (UNIR), enfocado en el uso de la tecnología y la inteligencia artificial en los museos para mejorar la transferencia del conocimiento a la sociedad.
-
-    El proyecto busca no solo compartir los hallazgos del grupo de investigación, sino también promover un acceso universal e inclusivo a la cultura, potenciando el valor educativo y cultural de los fondos museísticos. La interpretación de casos específicos de museos en España permitirá comprender en profundidad las prácticas y desafíos locales, aportando modelos replicables.',
+        'hero_tagline' => 'La cultura, conectada al futuro.',
+        'hero_description' => 'Museotech es un Proyecto de Investigación Precompetitivo financiado por la Universidad Internacional de La Rioja (UNIR), enfocado en el uso de la tecnología y la inteligencia artificial en los museos para mejorar la transferencia del conocimiento a la sociedad.',
         'hero_image' => 149,
         'hero_button_label' => 'Saber más',
         'hero_button_url' => '#objetivos',
@@ -31,7 +29,7 @@ function museotech_customizer_defaults(): array
         'transition_2_image' => 1685,
         'podcast_visible' => true,
         'podcast_eyebrow' => 'Podcasts',
-        'podcast_title' => 'Voces que conectan tecnología, museos y sociedad',
+        'podcast_title' => 'Voces que conectan',
         'podcast_description' => 'Los podcasts de Museotech son un espacio de diálogo donde la tecnología y la cultura se encuentran. A través de conversaciones con profesionales de museos, investigadores, tecnólogos y responsables de instituciones culturales, exploramos cómo la inteligencia artificial, la digitalización y la accesibilidad están transformando el papel de los museos en el siglo XXI.
 
     Este canal de comunicación no solo sirve para difundir los avances del proyecto Museotech, sino también para amplificar voces diversas que aportan nuevas formas de pensar el acceso a la cultura.',
@@ -39,7 +37,7 @@ function museotech_customizer_defaults(): array
         'podcast_button_url' => '/podcasts',
         'repository_visible' => true,
         'repository_eyebrow' => 'Repositorio',
-        'repository_title' => 'Accede al conocimiento generado por Museotech',
+        'repository_title' => 'Accede a nuestro conocimiento',
         'repository_description' => 'Nuestro repositorio recopila y pone a disposición pública todos los contenidos generados durante el desarrollo del proyecto: artículos académicos, informes técnicos, buenas prácticas, estudios de caso y materiales de divulgación.
 
     Este espacio nace con el objetivo de facilitar la transferencia de conocimiento entre la universidad, los museos y la sociedad, permitiendo que otros profesionales, investigadores y agentes culturales se inspiren, repliquen o evolucionen las soluciones propuestas.
@@ -48,11 +46,10 @@ function museotech_customizer_defaults(): array
         'repository_button_label' => 'Ver el repositorio',
         'repository_button_url' => '/repositorios',
         'news_visible' => true,
-        'news_eyebrow' => 'Noticias',
-        'news_title' => 'Avances, reflexiones y actualidad',
+        'news_eyebrow' => 'Últimos artículos',
         'news_description' => 'Nuestro blog busca documentar y generar un espacio abierto de reflexión sobre la era digital, la inteligencia artificial aplicada al patrimonio y los retos de la accesibilidad cultural.',
         'news_count' => 3,
-        'news_button_label' => 'Ver todas las noticias',
+        'news_button_label' => 'Ver todo',
         'news_button_url' => '/blog',
         'archive_podcast_heading' => 'nuestros programas',
         'archive_podcast_count' => 12,

@@ -1,14 +1,17 @@
 (() => {
     const menu = document.querySelector('#museotech-site-menu');
     const toggle = document.querySelector('.site-menu-toggle');
+    const header = document.querySelector('.site-header');
+    const logo = header?.querySelector('.custom-logo');
+    const toggleLines = toggle?.querySelector('.site-menu-toggle__lines');
 
-    if (!menu || !toggle) {
+    if (!menu || !toggle || !header) {
         return;
     }
 
     const panels = [...menu.querySelectorAll('.site-menu__panel')];
     const items = [...menu.querySelectorAll('.site-menu__item')];
-    const firstLink = menu.querySelector('a');
+    const firstLink = menu.querySelector('.site-menu__list a') ?? menu.querySelector('a');
     const focusableSelector = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
     const pageRegions = [...document.body.children].filter((element) =>
         !element.contains(menu) && !['SCRIPT', 'STYLE', 'LINK'].includes(element.tagName)
@@ -16,7 +19,68 @@
     const originalInertState = new Map(pageRegions.map((element) => [element, element.inert]));
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     let isOpen = false;
+    let isCompact = null;
     let timeline;
+
+    const setHeaderSize = (compact, immediate = false) => {
+        const isMobile = window.matchMedia('(max-width: 700px)').matches;
+        const logoMaxWidth = compact ? (isMobile ? 162 : 230) : (isMobile ? 190 : 280);
+        const values = {
+            height: compact ? (isMobile ? 58 : 62) : (isMobile ? 72 : 84),
+            paddingTop: compact ? (isMobile ? 4 : 6) : (isMobile ? 10 : 12),
+            paddingBottom: compact ? (isMobile ? 4 : 6) : (isMobile ? 10 : 12),
+        };
+
+        header.classList.toggle('is-compact', compact);
+
+        if (!window.gsap || immediate || reducedMotion.matches) {
+            if (window.gsap) {
+                window.gsap.set(header, values);
+                if (logo) {
+                    window.gsap.set(logo, { maxWidth: logoMaxWidth });
+                }
+                if (toggleLines) {
+                    window.gsap.set(toggleLines, { scale: compact ? 0.92 : 1, transformOrigin: 'right center' });
+                }
+            } else {
+                Object.assign(header.style, {
+                    height: `${values.height}px`,
+                    paddingTop: `${values.paddingTop}px`,
+                    paddingBottom: `${values.paddingBottom}px`,
+                });
+                if (logo) {
+                    logo.style.maxWidth = `${logoMaxWidth}px`;
+                }
+            }
+            return;
+        }
+
+        const transition = { duration: 0.42, ease: 'power3.out', overwrite: 'auto' };
+        window.gsap.to(header, { ...values, ...transition });
+        if (logo) {
+            window.gsap.to(logo, {
+                maxWidth: logoMaxWidth,
+                ...transition,
+            });
+        }
+        if (toggleLines) {
+            window.gsap.to(toggleLines, {
+                scale: compact ? 0.92 : 1,
+                transformOrigin: 'right center',
+                ...transition,
+            });
+        }
+    };
+
+    const updateHeaderSize = (immediate = false) => {
+        const compact = window.scrollY > 32;
+        if (compact === isCompact && !immediate) {
+            return;
+        }
+
+        isCompact = compact;
+        setHeaderSize(compact, immediate);
+    };
 
     const setClosed = () => {
         if (isOpen) {
@@ -120,6 +184,9 @@
     toggle.addEventListener('click', () => {
         isOpen ? closeMenu() : openMenu();
     });
+
+    window.addEventListener('scroll', () => updateHeaderSize(), { passive: true });
+    updateHeaderSize(true);
 
     menu.addEventListener('click', (event) => {
         if (event.target.closest('a')) {

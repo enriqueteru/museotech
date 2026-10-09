@@ -1,0 +1,168 @@
+@font-face {
+    font-family: "GT America Expanded";
+    src: url("../fonts/america/GTAmerica-ExpandedLight.woff2") format("woff2"),
+        url("../fonts/america/GTAmerica-ExpandedLight.woff") format("woff");
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Satoshi";
+    src: url("../fonts/satoshi/Satoshi-Regular.woff2") format("woff2"),
+        url("../fonts/satoshi/Satoshi-Regular.woff") format("woff");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Satoshi";
+    src: url("../fonts/satoshi/Satoshi-Medium.woff2") format("woff2"),
+        url("../fonts/satoshi/Satoshi-Medium.woff") format("woff");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Satoshi";
+    src: url("../fonts/satoshi/Satoshi-Bold.woff2") format("woff2"),
+        url("../fonts/satoshi/Satoshi-Bold.woff") format("woff");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    --font-america: "GT America Expanded", Arial, sans-serif;
+    --font-satoshi: "Satoshi", Arial, sans-serif;
+    --brand-ink: #111;
+    --brand-copy: #383834;
+    --brand-muted: #666;
+    --brand-paper: #fff;
+    --brand-surface: #f2f2ed;
+    --brand-border: #d0d0ca;
+    --type-heading-size: clamp(40.6px, 5.18vw, 78.4px);
+    --type-heading-size-mobile: clamp(30.8px, 8.26vw, 50.4px);
+    --type-heading-line-height: 0.92;
+    --type-heading-line-height-mobile: 0.94;
+    --type-card-heading-size: clamp(18px, 1.5vw, 23px);
+    --type-card-heading-size-mobile: clamp(18px, 5vw, 20px);
+    --type-card-heading-line-height: 1.15;
+    --type-body-size: clamp(14px, 1.15vw, 17px);
+    --type-body-size-mobile: 15px;
+    --type-body-line-height: 1.55;
+    --type-body-line-height-mobile: 1.5;
+}
+
+body {
+    font-family: var(--font-satoshi);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-america) !important;
+    font-synthesis: none !important;
+    font-size: var(--type-heading-size) !important;
+    font-weight: 400 !important;
+    letter-spacing: -0.06em !important;
+    line-height: var(--type-heading-line-height) !important;
+    text-transform: none !important;
+    text-wrap: balance;
+}
+
+.news-archive-card h2,
+.podcast-archive-card h2,
+.repository-record__title,
+.content-card h2,
+.single-related-card h3,
+.podcast-single__related-card h3 {
+    font-family: var(--font-america) !important;
+    font-size: var(--type-card-heading-size) !important;
+    font-weight: 500 !important;
+    letter-spacing: -0.03em !important;
+    line-height: var(--type-card-heading-line-height) !important;
+}
+
+p,
+li,
+dt,
+dd,
+blockquote,
+figcaption,
+label,
+input,
+textarea,
+select,
+button {
+    font-family: var(--font-satoshi);
+}
+
+/* Keep editorial prose consistent; preserve decorative and metadata labels. */
+p:not(
+    .team-page__marquee p,
+    .site-footer__funding p,
+    .site-footer__identity p,
+    .site-footer__credit,
+    .news-archive__header > p,
+    .home-news__intro > p,
+    .podcast-archive__header > p,
+    .podcast-archive__episodes-header p,
+    .podcast-single__panel-header > p,
+    .repository-record__metadata p,
+    .repository-single__section-heading p,
+    .team-profile-dialog__eyebrow,
+    .team-profile-dialog__counter
+) {
+    font-family: var(--font-satoshi) !important;
+    font-size: var(--type-body-size) !important;
+    font-weight: 400 !important;
+    letter-spacing: normal !important;
+    line-height: var(--type-body-line-height) !important;
+    text-transform: none !important;
+}
+
+@media (max-width: 760px) {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-size: var(--type-heading-size-mobile) !important;
+        line-height: var(--type-heading-line-height-mobile) !important;
+    }
+
+    .news-archive-card h2,
+    .podcast-archive-card h2,
+    .repository-record__title,
+    .content-card h2,
+    .single-related-card h3,
+    .podcast-single__related-card h3 {
+        font-size: var(--type-card-heading-size-mobile) !important;
+    }
+
+    p:not(
+        .team-page__marquee p,
+        .site-footer__funding p,
+        .site-footer__identity p,
+        .site-footer__credit,
+        .news-archive__header > p,
+        .home-news__intro > p,
+        .podcast-archive__header > p,
+        .podcast-archive__episodes-header p,
+        .podcast-single__panel-header > p,
+        .repository-record__metadata p,
+        .repository-single__section-heading p,
+        .team-profile-dialog__eyebrow,
+        .team-profile-dialog__counter
+    ) {
+        font-size: var(--type-body-size-mobile) !important;
+        line-height: var(--type-body-line-height-mobile) !important;
+    }
+}

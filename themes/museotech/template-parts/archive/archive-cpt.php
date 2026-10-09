@@ -1,5 +1,7 @@
-<?php $post_type = get_query_var('post_type'); ?>
-<?php $post_type = is_array($post_type) ? reset($post_type) : $post_type; ?>
+<?php
+$post_type = get_query_var('post_type');
+$post_type = is_array($post_type) ? reset($post_type) : $post_type;
+?>
 <header class="archive-header">
 	<h1><?php post_type_archive_title(); ?></h1>
 	<?php if ($post_type) : ?>

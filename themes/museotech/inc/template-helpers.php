@@ -53,3 +53,26 @@ function museotech_file_url($value): string
 
     return is_string($value) ? $value : '';
 }
+
+/**
+ * Render one of the locally selected Lucide 1.53.0 icons.
+ *
+ * @see https://lucide.dev License notices: assets/icons/LUCIDE-LICENSE.txt.
+ */
+function museotech_ui_icon(string $name): string
+{
+    $paths = [
+        'arrow-right' => '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+        'external-link' => '<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
+    ];
+
+    if (! isset($paths[$name])) {
+        return '';
+    }
+
+    return sprintf(
+        '<svg class="ui-icon ui-icon--%1$s" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">%2$s</svg>',
+        esc_attr($name),
+        $paths[$name]
+    );
+}

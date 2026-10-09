@@ -1,0 +1,111 @@
+.ui-button.ui-button,
+.pagination .page-numbers.page-numbers {
+    display: inline-flex;
+    min-height: 48px;
+    max-width: 100%;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 0 22px;
+    border: 1px solid var(--brand-ink);
+    border-radius: 999px;
+    appearance: none;
+    background: var(--brand-ink);
+    color: var(--brand-paper);
+    cursor: pointer;
+    font-family: var(--font-satoshi);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    text-transform: none;
+    white-space: nowrap;
+    transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease;
+}
+
+.ui-button.ui-button:hover,
+.pagination a.page-numbers.page-numbers:hover {
+    border-color: var(--brand-ink);
+    background: transparent;
+    color: var(--brand-ink);
+    text-decoration: none;
+}
+
+.ui-button.ui-button:focus-visible,
+.pagination a.page-numbers.page-numbers:focus-visible {
+    outline: 2px solid var(--brand-ink);
+    outline-offset: 3px;
+}
+
+.ui-button.ui-button--filter:not(.is-active),
+.pagination .page-numbers.page-numbers:not(.current) {
+    border-color: transparent;
+    background: var(--brand-paper);
+    color: var(--brand-ink);
+}
+
+.ui-button.ui-button--filter:not(.is-active):hover,
+.ui-button.ui-button--filter:not(.is-active):focus-visible,
+.pagination a.page-numbers.page-numbers:hover,
+.pagination a.page-numbers.page-numbers:focus-visible {
+    border-color: var(--brand-ink);
+}
+
+.ui-button.ui-button--compact {
+    min-height: 44px;
+    padding-inline: 18px;
+    font-size: 13px;
+}
+
+.ui-button .ui-icon {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 16px;
+    pointer-events: none;
+}
+
+.ui-button.ui-button--resource {
+    width: 100%;
+    min-height: 52px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    border-radius: 999px;
+    white-space: normal;
+}
+
+.ui-button.ui-button--resource small {
+    overflow: hidden;
+    max-width: 100%;
+    opacity: 0.72;
+    font: inherit;
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pagination .page-numbers.page-numbers {
+    min-width: 48px;
+    padding-inline: 16px;
+}
+
+.pagination .page-numbers.page-numbers.current {
+    cursor: default;
+}
+
+@media (max-width: 640px) {
+    .ui-button.ui-button,
+    .pagination .page-numbers.page-numbers {
+        min-height: 44px;
+        padding-inline: 18px;
+        font-size: 13px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ui-button.ui-button,
+    .pagination .page-numbers.page-numbers {
+        transition: none;
+    }
+}
