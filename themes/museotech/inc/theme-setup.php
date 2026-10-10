@@ -43,6 +43,14 @@ function museotech_enqueue_navigation_assets(): void
         file_exists($ui_components_style_path) ? (string) filemtime($ui_components_style_path) : $version
     );
 
+    $preloader_style_path = get_theme_file_path('/assets/css/site-preloader.css');
+    wp_enqueue_style(
+        'museotech-site-preloader',
+        get_theme_file_uri('/assets/css/site-preloader.css'),
+        ['museotech-ui-components'],
+        file_exists($preloader_style_path) ? (string) filemtime($preloader_style_path) : $version
+    );
+
     if (is_page_template('templates/page-contact.php')) {
         $contact_style_path = get_theme_file_path('/assets/css/contact.css');
         wp_enqueue_style(
@@ -76,6 +84,15 @@ function museotech_enqueue_navigation_assets(): void
         get_theme_file_uri('/assets/js/navigation.js'),
         [],
         file_exists($script_path) ? (string) filemtime($script_path) : $version,
+        ['in_footer' => true]
+    );
+
+    $preloader_script_path = get_theme_file_path('/assets/js/site-preloader.js');
+    wp_enqueue_script(
+        'museotech-site-preloader',
+        get_theme_file_uri('/assets/js/site-preloader.js'),
+        [],
+        file_exists($preloader_script_path) ? (string) filemtime($preloader_script_path) : $version,
         ['in_footer' => true]
     );
 

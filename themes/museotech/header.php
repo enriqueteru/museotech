@@ -7,6 +7,39 @@
 </head>
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
+<div class="site-preloader" data-site-preloader role="progressbar" aria-label="<?php esc_attr_e('Carga de recursos', 'museotech'); ?>" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="<?php esc_attr_e('0 de 0 recursos cargados', 'museotech'); ?>">
+    <div class="site-preloader__brand" aria-hidden="true">
+        <?php if (has_custom_logo()) : ?>
+            <?php
+            echo wp_get_attachment_image(
+                (int) get_theme_mod('custom_logo'),
+                'full',
+                false,
+                [
+                    'class' => 'site-preloader__logo',
+                    'alt' => '',
+                    'loading' => 'eager',
+                    'fetchpriority' => 'high',
+                    'decoding' => 'async',
+                ]
+            );
+            ?>
+        <?php else : ?>
+            <span class="site-preloader__wordmark"><?php echo esc_html(get_bloginfo('name')); ?></span>
+        <?php endif; ?>
+    </div>
+    <div class="site-preloader__content">
+        <div class="site-preloader__row">
+            <p class="site-preloader__label"><?php esc_html_e('Cargando', 'museotech'); ?></p>
+            <p class="site-preloader__percentage" data-site-preloader-percentage>0%</p>
+        </div>
+        <div class="site-preloader__track" aria-hidden="true">
+            <span class="site-preloader__fill"></span>
+        </div>
+        <p class="site-preloader__asset-count" data-site-preloader-asset-count>0 / 0 recursos</p>
+    </div>
+</div>
+<noscript><style>.site-preloader { display: none !important; }</style></noscript>
 <a class="skip-link" href="#main-content"><?php esc_html_e('Saltar al contenido', 'museotech'); ?></a>
 <header class="site-header">
     <?php if (has_custom_logo()) : ?>
