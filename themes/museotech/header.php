@@ -14,6 +14,9 @@
     <?php else : ?>
         <a class="site-title" href="<?php echo esc_url(home_url('/')); ?>"><?php bloginfo('name'); ?></a>
     <?php endif; ?>
+    <span class="site-header__partner">
+        <img src="<?php echo esc_url(home_url('/wp-content/uploads/2026/10/unir-logo.png')); ?>" alt="UNIR · Universidad Internacional de La Rioja" width="558" height="133">
+    </span>
     <button class="site-menu-toggle" type="button" aria-expanded="false" aria-controls="museotech-site-menu" aria-label="<?php esc_attr_e('Abrir navegación', 'museotech'); ?>">
         <span class="site-menu-toggle__lines" aria-hidden="true"></span>
     </button>

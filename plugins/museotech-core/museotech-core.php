@@ -143,6 +143,7 @@ function museotech_core_contact_form(): string
         <p class="museotech-contact-form__consent">
             <label for="museotech-contact-consent">
                 <input id="museotech-contact-consent" name="consent" type="checkbox" value="1" required>
+                <span class="museotech-contact-form__checkmark" aria-hidden="true"></span>
                 <?php esc_html_e('Doy mi consentimiento para el tratamiento de mis datos de acuerdo con la', 'museotech-core'); ?>
                 <a href="<?php echo esc_url(home_url('/politicas-de-privacidad/')); ?>"><?php esc_html_e('Política de privacidad', 'museotech-core'); ?></a>.
             </label>

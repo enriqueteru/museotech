@@ -64,6 +64,7 @@ $related_posts = new WP_Query($related_args);
 
         <div class="single-article__layout">
             <header class="single-article__lead">
+              
                 <div class="single-article__eyebrow">
                     <?php if ($primary_category) : ?>
                         <span><?php echo esc_html(ucfirst($primary_category->name)); ?></span>
@@ -112,7 +113,7 @@ $related_posts = new WP_Query($related_args);
 
             <section class="single-article__cta" aria-labelledby="single-article-cta-title">
                 <p class="single-article__cta-label"><?php esc_html_e('Participa en Museotech', 'museotech'); ?></p>
-                <h2 id="single-article-cta-title"><?php esc_html_e('Envíanos tus publicaciones o participa en el repositorio', 'museotech'); ?></h2>
+                <h2 id="single-article-cta-title"><?php esc_html_e('Participa en Museotech', 'museotech'); ?></h2>
                 <p><?php esc_html_e('Comparte tus publicaciones y propuestas con el equipo de Museotech.', 'museotech'); ?></p>
                 <a class="ui-button" href="<?php echo esc_url($contact_url); ?>">
                     <?php esc_html_e('Contacta con el equipo', 'museotech'); ?>

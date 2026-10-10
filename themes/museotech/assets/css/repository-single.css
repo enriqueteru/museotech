@@ -34,6 +34,10 @@
     border-bottom: 1px solid var(--repository-single-border);
 }
 
+.repository-single__back {
+    margin-bottom: 24px;
+}
+
 .repository-single__header-meta {
     display: flex;
     align-items: flex-start;

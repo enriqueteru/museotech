@@ -29,7 +29,7 @@ body.single-post {
 .single-article__shell {
     width: min(100%, 1620px);
     margin-inline: auto;
-    padding: 132px clamp(24px, 5vw, 96px) clamp(90px, 11vw, 170px);
+    padding: 140px clamp(24px, 5vw, 96px) clamp(72px, 9vw, 120px);
 }
 
 .single-article__back {
@@ -37,7 +37,7 @@ body.single-post {
     min-height: 44px;
     align-items: center;
     justify-content: center;
-    margin-bottom: clamp(42px, 5vw, 76px);
+    margin-bottom: 18px;
     padding: 0 18px;
     border: 1px solid rgb(17 17 17 / 18%);
     border-radius: 4px;
@@ -516,7 +516,7 @@ body.single-post {
 
 @media (max-width: 820px) {
     .single-article__shell {
-        padding-top: 112px;
+        padding-top: 98px;
     }
 
     .single-article__layout {
@@ -559,12 +559,12 @@ body.single-post {
 
 @media (max-width: 560px) {
     .single-article__shell {
-        padding: 100px 18px 78px;
+        padding: 98px 18px 64px;
     }
 
     .single-article__back {
         min-height: 42px;
-        margin-bottom: 34px;
+        margin-bottom: 14px;
         padding-inline: 14px;
         font-size: 14px;
     }

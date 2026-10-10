@@ -123,7 +123,7 @@ body.home {
 
 .home-objectives {
     scroll-margin-top: 84px;
-    padding: clamp(64px, 8vh, 96px) clamp(24px, 7vw, 132px) clamp(110px, 15vh, 170px);
+    padding: clamp(24px, 2vh, 46px) clamp(24px, 7vw, 132px);
     background: #fff;
 }
 
@@ -176,6 +176,7 @@ body.home {
     max-width: 34ch;
     margin: 0;
     font-size: clamp(18px, 1.7vw, 27px);
+    font-family: var(--font-america) !important;
     letter-spacing: -0.025em;
     line-height: 1.22;
 }
@@ -663,7 +664,7 @@ body.home {
 /* Home news grid reusing the blog cards */
 .home-news {
     padding: clamp(100px, 12vh, 150px) clamp(20px, 5vw, 80px);
-    background: #fff;
+    background: var(--brand-surface);
     color: #2b1744;
 }
 

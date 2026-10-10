@@ -41,9 +41,9 @@
     --brand-copy: #383834;
     --brand-muted: #666;
     --brand-paper: #fff;
-    --brand-surface: #f2f2ed;
+    --brand-surface: #f8f8f8;
     --brand-border: #d0d0ca;
-    --type-heading-size: clamp(40.6px, 5.18vw, 78.4px);
+    --type-heading-size: clamp(18.6px, 3.18vw, 40.6px);
     --type-heading-size-mobile: clamp(30.8px, 8.26vw, 50.4px);
     --type-heading-line-height: 0.92;
     --type-heading-line-height-mobile: 0.94;
@@ -59,13 +59,10 @@
 body {
     font-family: var(--font-satoshi);
 }
-
 h1,
 h2,
-h3,
-h4,
-h5,
-h6 {
+h3
+{
     font-family: var(--font-america) !important;
     font-synthesis: none !important;
     font-size: var(--type-heading-size) !important;
@@ -75,6 +72,25 @@ h6 {
     text-transform: none !important;
     text-wrap: balance;
 }
+
+h4,
+h5
+{
+    font-family: var(--font-america) !important;
+    font-synthesis: none !important;
+    font-size: var(--type-heading-size) !important;
+    margin: 0.2em 0;
+
+}
+
+h6
+{
+    font-family: var(--font-america) !important;
+    font-synthesis: none !important;
+    font-size: 20px !important;
+    margin: 0;
+}
+
 
 .news-archive-card h2,
 .podcast-archive-card h2,

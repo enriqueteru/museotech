@@ -118,6 +118,25 @@ function museotech_enqueue_navigation_assets(): void
         );
     }
 
+    if (is_home() || is_singular('post')) {
+        $blog_banner_style_path = get_theme_file_path('/assets/css/blog-banner-model.css');
+        wp_enqueue_style(
+            'museotech-blog-banner-model',
+            get_theme_file_uri('/assets/css/blog-banner-model.css'),
+            ['museotech-navigation'],
+            file_exists($blog_banner_style_path) ? (string) filemtime($blog_banner_style_path) : $version
+        );
+
+        $blog_banner_script_path = get_theme_file_path('/assets/js/home-hero-model.js');
+        wp_enqueue_script(
+            'museotech-home-hero-model',
+            get_theme_file_uri('/assets/js/home-hero-model.js'),
+            is_front_page() ? ['museotech-scroll-trigger'] : [],
+            file_exists($blog_banner_script_path) ? (string) filemtime($blog_banner_script_path) : $version,
+            ['in_footer' => true]
+        );
+    }
+
     if (is_post_type_archive('repositorios')) {
         $repository_archive_style_path = get_theme_file_path('/assets/css/repository-archive.css');
 
@@ -149,6 +168,25 @@ function museotech_enqueue_navigation_assets(): void
         );
     }
 
+    if (is_post_type_archive('repositorios') || is_singular('repositorios')) {
+        $repository_banner_style_path = get_theme_file_path('/assets/css/repository-banner-model.css');
+        wp_enqueue_style(
+            'museotech-repository-banner-model',
+            get_theme_file_uri('/assets/css/repository-banner-model.css'),
+            ['museotech-navigation'],
+            file_exists($repository_banner_style_path) ? (string) filemtime($repository_banner_style_path) : $version
+        );
+
+        $repository_banner_script_path = get_theme_file_path('/assets/js/home-hero-model.js');
+        wp_enqueue_script(
+            'museotech-home-hero-model',
+            get_theme_file_uri('/assets/js/home-hero-model.js'),
+            [],
+            file_exists($repository_banner_script_path) ? (string) filemtime($repository_banner_script_path) : $version,
+            ['in_footer' => true]
+        );
+    }
+
     if (is_post_type_archive('colaborador')) {
         $collaborator_archive_style_path = get_theme_file_path('/assets/css/collaborator-archive.css');
 
@@ -157,6 +195,25 @@ function museotech_enqueue_navigation_assets(): void
             get_theme_file_uri('/assets/css/collaborator-archive.css'),
             ['museotech-navigation'],
             file_exists($collaborator_archive_style_path) ? (string) filemtime($collaborator_archive_style_path) : $version
+        );
+    }
+
+    if (is_post_type_archive('colaborador') || is_singular('colaborador')) {
+        $collaborator_banner_style_path = get_theme_file_path('/assets/css/collaborator-banner-model.css');
+        wp_enqueue_style(
+            'museotech-collaborator-banner-model',
+            get_theme_file_uri('/assets/css/collaborator-banner-model.css'),
+            ['museotech-navigation'],
+            file_exists($collaborator_banner_style_path) ? (string) filemtime($collaborator_banner_style_path) : $version
+        );
+
+        $collaborator_banner_script_path = get_theme_file_path('/assets/js/home-hero-model.js');
+        wp_enqueue_script(
+            'museotech-home-hero-model',
+            get_theme_file_uri('/assets/js/home-hero-model.js'),
+            [],
+            file_exists($collaborator_banner_script_path) ? (string) filemtime($collaborator_banner_script_path) : $version,
+            ['in_footer' => true]
         );
     }
 
@@ -218,16 +275,8 @@ function museotech_enqueue_navigation_assets(): void
             file_exists($podcast_single_script_path) ? (string) filemtime($podcast_single_script_path) : $version,
             ['in_footer' => true]
         );
-
-        $podcast_model_script_path = get_theme_file_path('/assets/js/home-hero-model.js');
-        wp_enqueue_script(
-            'museotech-home-hero-model',
-            get_theme_file_uri('/assets/js/home-hero-model.js'),
-            [],
-            file_exists($podcast_model_script_path) ? (string) filemtime($podcast_model_script_path) : $version,
-            ['in_footer' => true]
-        );
     }
+
 
     if (is_home() || is_post_type_archive('repositorios') || is_post_type_archive('colaborador') || is_post_type_archive('podcast')) {
         $section_banner_style_path = get_theme_file_path('/assets/css/section-banners.css');
@@ -318,7 +367,7 @@ add_action('wp_enqueue_scripts', 'museotech_enqueue_navigation_assets');
 
 function museotech_home_hero_model_import_map(): void
 {
-    if (! is_front_page() && ! is_singular('podcast')) {
+    if (! is_front_page() && ! is_home() && ! is_singular('post') && ! is_post_type_archive('podcast') && ! is_singular('podcast') && ! is_post_type_archive('colaborador') && ! is_singular('colaborador') && ! is_post_type_archive('repositorios') && ! is_singular('repositorios')) {
         return;
     }
 

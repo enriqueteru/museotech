@@ -8,8 +8,8 @@
                 <?php $objective = museotech_option('objective_' . $index); ?>
                 <?php if ($objective) : ?>
                     <li class="home-objectives__item" data-icon="<?php echo esc_attr(museotech_option('objective_' . $index . '_icon')); ?>">
-                        <span aria-hidden="true"><?php echo esc_html(sprintf('%02d', $index)); ?></span>
-                        <p><?php echo esc_html($objective); ?></p>
+                        <h6 aria-hidden="true"><?php echo esc_html(sprintf('%02d', $index)); ?></h6>
+                        <p class="home-objectives__title"><?php echo esc_html($objective); ?></p>
                     </li>
                 <?php endif; ?>
             <?php endfor; ?>

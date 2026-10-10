@@ -2,6 +2,7 @@
 $repository_id = get_the_ID();
 $repository_title = get_the_title($repository_id);
 $repository_permalink = get_permalink($repository_id);
+$repository_archive_url = get_post_type_archive_link('repositorios') ?: home_url('/repositorios/');
 
 $repository_authors_value = museotech_field('autores', $repository_id);
 $repository_authors = is_scalar($repository_authors_value) ? trim((string) $repository_authors_value) : '';
@@ -160,6 +161,9 @@ $repository_has_content = trim(wp_strip_all_tags($repository_content)) !== '' ||
 <div class="repository-single__layout">
     <article <?php post_class('repository-single__main'); ?>>
         <header class="repository-single__header">
+            <a class="ui-button ui-button--compact repository-single__back" href="<?php echo esc_url($repository_archive_url); ?>">
+                <?php esc_html_e('Volver a listado', 'museotech'); ?>
+            </a>
             <div class="repository-single__header-meta">
                 <p class="repository-single__published">
                     <span><?php esc_html_e('Publicado', 'museotech'); ?></span>

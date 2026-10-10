@@ -64,7 +64,12 @@ while (have_posts()) {
                 type="button"
                 data-profile-label="<?php esc_attr_e('Ver ficha de', 'museotech'); ?>"
                 aria-label="<?php echo esc_attr(sprintf(__('Ver ficha de %s', 'museotech'), $members[0]['name'])); ?>"
-            ></button>
+            >
+                <span class="team-page__profile-hint" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.5"></circle></svg>
+                    <span><?php esc_html_e('Ver ficha', 'museotech'); ?></span>
+                </span>
+            </button>
             <div class="team-page__thumbnails" role="tablist" aria-label="<?php esc_attr_e('Seleccionar miembro del equipo', 'museotech'); ?>">
                 <?php foreach ($members as $index => $member) : ?>
                     <button
@@ -82,8 +87,8 @@ while (have_posts()) {
                 <?php endforeach; ?>
             </div>
             <div class="team-page__info" aria-live="polite">
-                <p class="team-page__name"><?php echo esc_html($members[0]['name']); ?></p>
-                <p class="team-page__role"><?php echo esc_html($members[0]['role']); ?></p>
+                <h4 class="team-page__name"><?php echo esc_html($members[0]['name']); ?></h4>
+                <h6 class="team-page__role"><?php echo esc_html($members[0]['role']); ?></h6>
             </div>
         </div>
 

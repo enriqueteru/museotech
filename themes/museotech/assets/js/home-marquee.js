@@ -28,7 +28,7 @@
         const tween = window.gsap.to(track, {
             xPercent: -50,
             repeat: -1,
-            duration: 12,
+            duration: 28,
             ease: 'none',
             paused: true,
         }).totalProgress(0.5);

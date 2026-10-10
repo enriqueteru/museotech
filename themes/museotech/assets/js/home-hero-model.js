@@ -5,7 +5,7 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 // Orientaciones de reposo en radianes: cambia yaw (giro) o pitch (inclinación).
 const HOME_EDITORIAL_POSE = Object.freeze({
     repository: Object.freeze({ yaw: 6.5, pitch: -.2 }),
-    podcast: Object.freeze({ yaw: 4.9, pitch: 0 }),
+    podcast: Object.freeze({ yaw: 5.6, pitch: 0 }),
 });
 
 const HOME_EDITORIAL_PARTICLES = Object.freeze({
@@ -13,15 +13,16 @@ const HOME_EDITORIAL_PARTICLES = Object.freeze({
     podcast: Object.freeze({ fitScale: 1.2, displayScale: 1.2, fitMargin: 0.7 }),
 });
 
-const stages = document.querySelectorAll('[data-home-hero-model], [data-home-echoes-model], [data-home-podcast-model], [data-home-repository-model], [data-podcast-single-model]');
+const stages = document.querySelectorAll('[data-home-hero-model], [data-home-echoes-model], [data-home-podcast-model], [data-home-repository-model], [data-podcast-single-model], [data-podcast-banner-model]');
 
 stages.forEach((stage) => {
-    const content = stage.closest('.home-hero__content, .home-echoes__content, .home-podcast__content, .home-repository__content, .podcast-single__hero');
+    const content = stage.closest('.home-hero__content, .home-echoes__content, .home-podcast__content, .home-repository__content, .podcast-archive__header, .podcast-single__hero, .news-archive__header, .single-article__lead, .collaborators-page__banner-inner, .collaborator-profile__header, .repository-archive__intro, .repository-single__header');
     if (!content) return;
     const modelUrl = stage.dataset.modelSrc;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const isHomeRepositoryModel = stage.matches('[data-home-repository-model]');
     const isHomePodcastModel = stage.matches('[data-home-podcast-model]');
+    const isPodcastBannerModel = stage.matches('[data-podcast-banner-model]');
     const isHomeEditorialModel = isHomeRepositoryModel || isHomePodcastModel;
     const homeModelPose = isHomeRepositoryModel
         ? HOME_EDITORIAL_POSE.repository
@@ -30,7 +31,11 @@ stages.forEach((stage) => {
             : null;
     const homeParticlesConfig = isHomePodcastModel
         ? HOME_EDITORIAL_PARTICLES.podcast
-        : HOME_EDITORIAL_PARTICLES.repository;
+        : isHomeRepositoryModel
+            ? HOME_EDITORIAL_PARTICLES.repository
+            : null;
+    const configuredRotationSpeed = Number.parseFloat(stage.dataset.modelRotationSpeed);
+    const idleRotationSpeed = Number.isFinite(configuredRotationSpeed) ? configuredRotationSpeed : 0.11;
 
     let renderer;
     let camera;
@@ -77,7 +82,7 @@ stages.forEach((stage) => {
             if (Math.abs(angularVelocityY) < 0.01) angularVelocityY = 0;
             if (Math.abs(angularVelocityX) < 0.01) angularVelocityX = 0;
 
-            autoRotation += delta * 0.11;
+            autoRotation += delta * idleRotationSpeed;
         }
 
         const baseYaw = homeModelPose?.yaw ?? -0.38;
@@ -131,7 +136,10 @@ stages.forEach((stage) => {
     };
 
     const setStaticPose = () => {
-        modelScale = stage.matches('[data-home-repository-model]') ? 1 : 1.15;
+        const configuredScale = Number.parseFloat(stage.dataset.modelScale);
+        modelScale = Number.isFinite(configuredScale) && configuredScale > 0
+            ? configuredScale
+            : stage.matches('[data-home-repository-model]') ? 1 : 1.15;
     };
 
     const updateEditorialCamera = () => {
@@ -142,11 +150,11 @@ stages.forEach((stage) => {
         if (reducedMotion) renderPose(performance.now());
     };
 
-    const fitHomeEditorialCamera = () => {
-        if (!isHomeEditorialModel || !camera || !pivot) return;
+    const fitEditorialCamera = () => {
+        if ((!isHomeEditorialModel && !isPodcastBannerModel) || !camera || !pivot) return;
 
         let sceneRadius = 0;
-        [pivot, homeParticles].forEach((group) => {
+        (isHomeEditorialModel ? [pivot, homeParticles] : [pivot]).forEach((group) => {
             if (!group) return;
             group.updateMatrixWorld(true);
             group.traverse((object) => {
@@ -161,7 +169,7 @@ stages.forEach((stage) => {
         const limitingHalfFov = Math.atan(
             Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * Math.min(camera.aspect, 1),
         );
-        const fitMargin = homeParticlesConfig.fitMargin;
+        const fitMargin = homeParticlesConfig?.fitMargin ?? 1.12;
         const fitDistance = (sceneRadius / Math.sin(limitingHalfFov)) * fitMargin;
         const closestCameraDistance = fitDistance / 0.96;
         generalCameraPosition = camera.position.clone().normalize().multiplyScalar(
@@ -374,9 +382,13 @@ stages.forEach((stage) => {
             pivot.add(model);
             setStaticPose();
             pivot.scale.setScalar(modelScale);
+            if (isHomeEditorialModel || isPodcastBannerModel) {
+                fitEditorialCamera();
+            }
             if (isHomeEditorialModel) {
-                fitHomeEditorialCamera();
                 homeParticles.scale.setScalar(homeParticlesConfig.displayScale);
+            }
+            if (isHomeEditorialModel || isPodcastBannerModel) {
                 updateEditorialCamera();
             }
             stage.classList.add('is-ready');

@@ -23,7 +23,14 @@ $contact_url = $contact_page ? get_permalink($contact_page) : home_url('/contact
 ?>
 <main id="main-content" class="repository-archive">
     <header class="repository-archive__intro section-banner">
-        <h1 class="section-banner__title"><?php esc_html_e('Recursos recientes', 'museotech'); ?></h1>
+        <?php get_template_part('template-parts/components/podcast-banner-model', null, [
+            'model_path' => 'assets/models/repository-book.glb',
+            'component_class' => 'repository-banner-model',
+            'model_scale' => 1.05,
+            'rotation_speed' => 0.16,
+            'aria_label' => __('Libro 3D interactivo. Arrástralo o usa las flechas para girarlo; el giro automático respeta las preferencias de movimiento.', 'museotech'),
+        ]); ?>
+        <h1 class="section-banner__title"><?php esc_html_e('Repositorio', 'museotech'); ?></h1>
         <?php if ($archive_intro !== '') : ?>
             <p class="section-banner__description"><?php echo esc_html($archive_intro); ?></p>
         <?php endif; ?>
@@ -39,7 +46,7 @@ $contact_url = $contact_page ? get_permalink($contact_page) : home_url('/contact
         <aside class="repository-archive__sidebar" aria-labelledby="repository-contribute-title">
             <div class="repository-archive__contribute">
                 <p class="repository-archive__contribute-label"><?php esc_html_e('Participa', 'museotech'); ?></p>
-                <h2 id="repository-contribute-title"><?php esc_html_e('Envíanos tus publicaciones o participa en el repositorio', 'museotech'); ?></h2>
+                <h2 id="repository-contribute-title"><?php esc_html_e('Participa en Museotech', 'museotech'); ?></h2>
                 <p><?php esc_html_e('Comparte tus publicaciones y propuestas con el equipo de Museotech.', 'museotech'); ?></p>
                 <a class="ui-button repository-archive__contribute-link" href="<?php echo esc_url($contact_url); ?>">
                     <?php esc_html_e('Contacta con el equipo', 'museotech'); ?>

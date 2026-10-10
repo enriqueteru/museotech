@@ -32,6 +32,7 @@ $related_podcasts = new WP_Query([
             <div class="podcast-single__layout">
                 <main class="podcast-single__main">
                     <header class="podcast-single__header">
+                        <?php get_template_part('template-parts/components/podcast-banner-model'); ?>
                         <p class="podcast-single__eyebrow">
                             <span><?php esc_html_e('Podcast', 'museotech'); ?></span>
                             <?php if ($recording_date !== '') : ?><span><?php echo esc_html($recording_date); ?></span><?php endif; ?>

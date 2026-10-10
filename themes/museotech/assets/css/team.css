@@ -152,6 +152,46 @@
     outline-offset: 5px;
 }
 
+.team-page__profile-hint {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 12px 18px;
+    border-radius: 999px;
+    background: var(--team-ink);
+    color: var(--team-white);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translate(-50%, -42%) scale(0.96);
+    transition: opacity 160ms ease, transform 160ms ease, visibility 160ms ease;
+}
+
+.team-page__profile-hint svg {
+    display: block;
+    width: 19px;
+    height: 19px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.7;
+}
+
+.team-page__profile-trigger:hover .team-page__profile-hint,
+.team-page__profile-trigger:focus-visible .team-page__profile-hint {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);
+}
+
 .team-page__thumbnails {
     display: flex;
     width: 100%;
@@ -547,6 +587,10 @@
     }
 
     .team-page__cursor svg {
+        transition: none;
+    }
+
+    .team-page__profile-hint {
         transition: none;
     }
 

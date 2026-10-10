@@ -16,6 +16,13 @@ foreach (['museos', 'ia', 'arte', 'tecnologia', 'patrimonio'] as $category_slug)
 ?>
 <main id="main-content" class="news-archive">
     <header class="news-archive__header section-banner">
+        <?php get_template_part('template-parts/components/podcast-banner-model', null, [
+            'model_path' => 'assets/models/blog-pluma.glb',
+            'component_class' => 'blog-banner-model',
+            'model_scale' => 1.05,
+            'rotation_speed' => 0.2,
+            'aria_label' => __('Pluma 3D interactiva. Arrástrala o usa las flechas para girarla; el giro automático respeta las preferencias de movimiento.', 'museotech'),
+        ]); ?>
         <p class="section-banner__eyebrow"><?php esc_html_e('Blog Museotech', 'museotech'); ?></p>
         <h1 class="section-banner__title"><?php esc_html_e('Todos los artículos', 'museotech'); ?></h1>
         <?php if ($archive_description !== '') : ?>
