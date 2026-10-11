@@ -70,26 +70,32 @@ while (have_posts()) {
                     <span><?php esc_html_e('Ver ficha', 'museotech'); ?></span>
                 </span>
             </button>
+            <div class="team-page__info" id="team-page-info" role="tabpanel" aria-labelledby="team-member-tab-1" tabindex="0" aria-live="polite">
+                <h1 class="team-page__name"><?php echo esc_html($members[0]['name']); ?></h1>
+                <p class="team-page__role"><?php echo esc_html($members[0]['role']); ?></p>
+            </div>
             <div class="team-page__thumbnails" role="tablist" aria-label="<?php esc_attr_e('Seleccionar miembro del equipo', 'museotech'); ?>">
-                <?php foreach ($members as $index => $member) : ?>
-                    <button
-                        class="team-page__thumbnail<?php echo $index === 0 ? ' is-active' : ''; ?>"
-                        type="button"
-                        role="tab"
-                        data-team-target="<?php echo esc_attr((string) ($index + 1)); ?>"
-                        aria-selected="<?php echo $index === 0 ? 'true' : 'false'; ?>"
-                        aria-label="<?php echo esc_attr($member['name']); ?>"
-                    >
-                        <?php if ($member['thumbnail_id']) : ?>
-                            <?php echo wp_get_attachment_image($member['thumbnail_id'], 'thumbnail', false, ['alt' => '', 'loading' => 'lazy']); ?>
-                        <?php endif; ?>
-                    </button>
-                <?php endforeach; ?>
+                <div class="team-page__thumbnail-track" role="presentation">
+                    <?php foreach ($members as $index => $member) : ?>
+                        <button
+                            class="team-page__thumbnail<?php echo $index === 0 ? ' is-active' : ''; ?>"
+                            type="button"
+                            role="tab"
+                            id="team-member-tab-<?php echo esc_attr((string) ($index + 1)); ?>"
+                            aria-controls="team-page-info"
+                            tabindex="<?php echo $index === 0 ? '0' : '-1'; ?>"
+                            data-team-target="<?php echo esc_attr((string) ($index + 1)); ?>"
+                            aria-selected="<?php echo $index === 0 ? 'true' : 'false'; ?>"
+                            aria-label="<?php echo esc_attr($member['name']); ?>"
+                        >
+                            <?php if ($member['thumbnail_id']) : ?>
+                                <?php echo wp_get_attachment_image($member['thumbnail_id'], 'thumbnail', false, ['alt' => '', 'loading' => 'lazy']); ?>
+                            <?php endif; ?>
+                        </button>
+                    <?php endforeach; ?>
+                </div>
             </div>
-            <div class="team-page__info" aria-live="polite">
-                <h4 class="team-page__name"><?php echo esc_html($members[0]['name']); ?></h4>
-                <h6 class="team-page__role"><?php echo esc_html($members[0]['role']); ?></h6>
-            </div>
+
         </div>
 
         <button class="team-page__control team-page__control--previous" type="button" aria-label="<?php esc_attr_e('Ver miembro anterior', 'museotech'); ?>"></button>

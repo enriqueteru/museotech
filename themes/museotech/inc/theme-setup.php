@@ -14,6 +14,66 @@ function museotech_setup(): void
 }
 add_action('after_setup_theme', 'museotech_setup');
 
+function museotech_add_performance_hints(array $urls, string $relation_type): array
+{
+    if ($relation_type === 'preconnect') {
+        $urls[] = [
+            'href' => 'https://cdnjs.cloudflare.com',
+            'crossorigin' => '',
+        ];
+    }
+
+    return $urls;
+}
+add_filter('wp_resource_hints', 'museotech_add_performance_hints', 10, 2);
+
+function museotech_preload_primary_fonts(): void
+{
+    $fonts = [
+        '/assets/fonts/america/GTAmerica-ExpandedLight.woff2',
+        '/assets/fonts/satoshi/Satoshi-Regular.woff2',
+    ];
+
+    foreach ($fonts as $font) {
+        $font_path = get_theme_file_path($font);
+        if (! is_file($font_path)) {
+            continue;
+        }
+
+        printf(
+            '<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin fetchpriority="high">' . "\n",
+            esc_url(get_theme_file_uri($font))
+        );
+    }
+}
+add_action('wp_head', 'museotech_preload_primary_fonts', 1);
+
+function museotech_defer_noncritical_styles(string $html, string $handle, string $href, string $media): string
+{
+    $deferred_handles = [
+        'museotech-core-cookie-consent',
+        'museotech-home-repository',
+        'museotech-home-scroll',
+    ];
+    $front_page_handles = ['museotech-news-archive'];
+
+    if (! in_array($handle, $deferred_handles, true)
+        && (! is_front_page() || ! in_array($handle, $front_page_handles, true))) {
+        return $html;
+    }
+
+    $style_id = esc_attr($handle . '-css');
+    $style_url = esc_url($href);
+
+    return sprintf(
+        '<link rel="preload" id="%1$s" href="%2$s" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">' . "\n"
+        . '<noscript><link rel="stylesheet" href="%2$s"></noscript>' . "\n",
+        $style_id,
+        $style_url
+    );
+}
+add_filter('style_loader_tag', 'museotech_defer_noncritical_styles', 10, 4);
+
 function museotech_enqueue_navigation_assets(): void
 {
     $style_path = get_theme_file_path('/assets/css/navigation.css');

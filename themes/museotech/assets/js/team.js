@@ -50,6 +50,171 @@
         });
     });
 
+    const thumbnailMotion = (() => {
+        const strip = page.querySelector('.team-page__thumbnails');
+        const track = strip?.querySelector('.team-page__thumbnail-track');
+        if (!track || !thumbnails.length) return null;
+
+        const axes = ['x', 'y', 'rotation'];
+        const bubbles = thumbnails.map((element) => ({
+            element,
+            value: { x: 0, y: 0, rotation: 0 },
+            target: { x: 0, y: 0, rotation: 0 },
+            velocity: { x: 0, y: 0, rotation: 0 },
+        }));
+        let selected = currentIndex;
+        let hovered = -1;
+        let size = 58;
+        let frame = 0;
+        let lastTime = 0;
+
+        const render = (bubble) => {
+            const { x, y, rotation } = bubble.value;
+            bubble.element.style.transform = `translate3d(${x.toFixed(3)}px, ${y.toFixed(3)}px, 0) rotate(${rotation.toFixed(3)}deg)`;
+        };
+
+        const settle = () => {
+            cancelAnimationFrame(frame);
+            frame = 0;
+            lastTime = 0;
+            bubbles.forEach((bubble) => {
+                axes.forEach((axis) => {
+                    bubble.value[axis] = bubble.target[axis];
+                    bubble.velocity[axis] = 0;
+                });
+                render(bubble);
+            });
+        };
+
+        // Solve the damped spring at the elapsed frame time, preserving momentum
+        // on rapid selections and the same duration on slower devices.
+        const tick = (time) => {
+            const delta = Math.max(0, (time - lastTime) / 1000);
+            let moving = false;
+            lastTime = time;
+
+            bubbles.forEach((bubble, index) => {
+                const distance = Math.abs(index - selected);
+                const stiffness = 230 - Math.min(distance, 5) * 13;
+                const damping = 0.76 * Math.sqrt(stiffness);
+                const frequency = Math.sqrt(stiffness - damping * damping);
+                const decay = Math.exp(-damping * delta);
+                const cosine = Math.cos(frequency * delta);
+                const sine = Math.sin(frequency * delta);
+                axes.forEach((axis) => {
+                    const displacement = bubble.value[axis] - bubble.target[axis];
+                    const velocity = bubble.velocity[axis];
+                    bubble.value[axis] = bubble.target[axis] + decay * (displacement * cosine + (velocity + damping * displacement) * sine / frequency);
+                    bubble.velocity[axis] = decay * (velocity * cosine - (damping * velocity + stiffness * displacement) * sine / frequency);
+                    const tolerance = 0.025;
+                    if (Math.abs(bubble.target[axis] - bubble.value[axis]) > tolerance
+                        || Math.abs(bubble.velocity[axis]) > tolerance * 10) {
+                        moving = true;
+                    } else {
+                        bubble.value[axis] = bubble.target[axis];
+                        bubble.velocity[axis] = 0;
+                    }
+                });
+                render(bubble);
+            });
+
+            frame = moving ? requestAnimationFrame(tick) : 0;
+            if (!moving) lastTime = 0;
+        };
+
+        const animate = () => {
+            if (reducedMotion.matches) {
+                settle();
+            } else if (!frame && !document.hidden) {
+                lastTime = performance.now();
+                frame = requestAnimationFrame(tick);
+            }
+        };
+
+        const layout = (immediate = false) => {
+            const edge = 16;
+            const stride = size * 0.68;
+            const widthAvailable = strip.clientWidth;
+            const centerY = (strip.clientHeight - size) / 2;
+            // Leave a real gap around the enlarged circle; the others overlap.
+            const selectedStride = size * 1.24;
+            let x = edge;
+            bubbles.forEach((bubble, index) => {
+                if (index) x += index === selected || index - 1 === selected ? selectedStride : stride;
+                const active = index === selected;
+                const over = index === hovered;
+                const neighbor = hovered >= 0 && Math.abs(index - hovered) === 1 && !active;
+                bubble.target = {
+                    x: x + (neighbor ? Math.sign(index - hovered) * 3 : 0),
+                    y: centerY + (over ? -4 : 0),
+                    rotation: over ? (index % 2 ? -1.2 : 1.2) : 0,
+                };
+                bubble.element.style.zIndex = String(active ? bubbles.length + 2 : over ? bubbles.length + 1 : bubbles.length - Math.abs(index - selected));
+            });
+            const width = x + size + edge;
+            const offset = Math.max(0, (widthAvailable - width) / 2);
+            bubbles.forEach((bubble) => { bubble.target.x += offset; });
+            track.style.width = `${Math.max(width, widthAvailable)}px`;
+            if (immediate) settle();
+            else animate();
+        };
+
+        const revealSelected = (immediate = false) => {
+            const x = bubbles[selected].target.x;
+            const padding = 16 + size * 0.1;
+            let left = strip.scrollLeft;
+            if (x - padding < left) left = x - padding;
+            else if (x + size + padding > left + strip.clientWidth) left = x + size + padding - strip.clientWidth;
+            strip.scrollTo({ left: Math.max(0, left), behavior: immediate || reducedMotion.matches ? 'instant' : 'smooth' });
+        };
+
+        const resize = () => {
+            size = parseFloat(getComputedStyle(strip).getPropertyValue('--team-thumbnail-size')) || 58;
+            layout(true);
+            revealSelected(true);
+        };
+
+        strip.classList.add('is-animated');
+        resize();
+        const resizeObserver = new ResizeObserver(resize);
+        resizeObserver.observe(strip);
+
+        strip.addEventListener('pointermove', (event) => {
+            if (event.pointerType !== 'mouse' || !finePointer.matches) return;
+            const index = thumbnails.indexOf(event.target.closest('.team-page__thumbnail'));
+            if (hovered === index) return;
+            hovered = index;
+            layout();
+        });
+        strip.addEventListener('pointerleave', () => {
+            if (hovered === -1) return;
+            hovered = -1;
+            layout();
+        });
+        reducedMotion.addEventListener('change', animate);
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                cancelAnimationFrame(frame);
+                frame = 0;
+                lastTime = 0;
+            } else {
+                animate();
+            }
+        });
+
+        return {
+            select(index) {
+                if (index !== selected && !reducedMotion.matches) {
+                    bubbles[index].velocity.y -= size * 0.35;
+                }
+                selected = index;
+                hovered = -1;
+                layout();
+                revealSelected();
+            },
+        };
+    })();
+
     const updateInfo = () => {
         name.textContent = members[currentIndex].name;
         role.textContent = members[currentIndex].role;
@@ -63,20 +228,25 @@
             const active = index === currentIndex;
             thumbnail.classList.toggle('is-active', active);
             thumbnail.setAttribute('aria-selected', String(active));
+            thumbnail.tabIndex = active ? 0 : -1;
             if (active) {
-                thumbnail.scrollIntoView({
+                page.querySelector('#team-page-info')?.setAttribute('aria-labelledby', thumbnail.id);
+                if (!thumbnailMotion) thumbnail.scrollIntoView({
                     behavior: reducedMotion.matches ? 'auto' : 'smooth',
                     block: 'nearest',
                     inline: 'nearest',
                 });
             }
         });
+        thumbnailMotion?.select(currentIndex);
     };
 
     const setClip = (element, clipPath, delay = 0, immediate = false) => {
         if (!element) {
             return;
         }
+
+        window.gsap?.killTweensOf(element, 'clipPath');
 
         if (window.gsap && immediate) {
             window.gsap.set(element, { clipPath });
@@ -228,6 +398,23 @@
         thumbnail.addEventListener('click', () => {
             goTo(Number(thumbnail.dataset.teamTarget) - 1);
         });
+        thumbnail.addEventListener('keydown', (event) => {
+            const currentTabIndex = thumbnails.indexOf(thumbnail);
+            let targetTabIndex = null;
+            if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+                targetTabIndex = (currentTabIndex + 1) % thumbnails.length;
+            } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+                targetTabIndex = (currentTabIndex - 1 + thumbnails.length) % thumbnails.length;
+            } else if (event.key === 'Home') {
+                targetTabIndex = 0;
+            } else if (event.key === 'End') {
+                targetTabIndex = thumbnails.length - 1;
+            }
+            if (targetTabIndex === null) return;
+            event.preventDefault();
+            goTo(targetTabIndex);
+            thumbnails[targetTabIndex].focus({ preventScroll: true });
+        });
     });
     profileTrigger?.addEventListener('click', openProfile);
     profileClose?.addEventListener('click', closeProfile);
@@ -249,18 +436,6 @@
     [profileTrigger, ...thumbnails].filter(Boolean).forEach((control) => {
         control.addEventListener('pointerenter', () => page.classList.add('is-profile-hover'));
         control.addEventListener('pointerleave', () => page.classList.remove('is-profile-hover'));
-    });
-
-    document.addEventListener('keydown', (event) => {
-        if (profileDialog?.open) {
-            return;
-        }
-        if (event.key === 'ArrowRight') {
-            showNext();
-        }
-        if (event.key === 'ArrowLeft') {
-            showPrevious();
-        }
     });
 
     document.addEventListener('mousemove', (event) => {

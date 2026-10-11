@@ -21,7 +21,7 @@ $social_icons = [
     </div>
     <div class="site-footer__bottom">
         <div class="site-footer__bottom-inner">
-            <div class="site-footer__social" aria-label="<?php esc_attr_e('Redes sociales', 'museotech'); ?>">
+            <nav class="site-footer__social" aria-label="<?php esc_attr_e('Redes sociales', 'museotech'); ?>">
                 <div class="site-footer__social-links">
                     <?php foreach (museotech_social_links() as $label => $url) : ?>
                         <a href="<?php echo esc_url($url); ?>" target="_blank" rel="noopener noreferrer">
@@ -33,7 +33,7 @@ $social_icons = [
                 <p class="site-footer__credit">
                     <a href="https://solvenza.io" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Creado por Solvenza', 'museotech'); ?></a>
                 </p>
-            </div>
+            </nav>
             <nav class="site-footer__legal" aria-label="<?php esc_attr_e('Navegación legal', 'museotech'); ?>">
                 <?php wp_nav_menu(['theme_location' => 'footer', 'container' => false, 'fallback_cb' => false]); ?>
             </nav>

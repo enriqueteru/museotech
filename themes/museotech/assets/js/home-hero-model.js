@@ -1,17 +1,27 @@
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
-
 // Orientaciones de reposo en radianes: cambia yaw (giro) o pitch (inclinación).
 const HOME_EDITORIAL_POSE = Object.freeze({
     repository: Object.freeze({ yaw: 6.5, pitch: -.2 }),
     podcast: Object.freeze({ yaw: 5.6, pitch: 0 }),
 });
 
-const HOME_EDITORIAL_PARTICLES = Object.freeze({
-    repository: Object.freeze({ fitScale: 0.58, displayScale: 0.95, fitMargin: 0.8 }),
-    podcast: Object.freeze({ fitScale: 1.2, displayScale: 1.2, fitMargin: 0.7 }),
-});
+let threeCoreDependencies;
+let meshoptDependency;
+const loadThreeDependencies = async (needsMeshopt) => {
+    if (!threeCoreDependencies) {
+        threeCoreDependencies = Promise.all([
+            import('three'),
+            import('three/addons/loaders/GLTFLoader.js'),
+        ]).then(([three, loader]) => ({
+            THREE: three,
+            GLTFLoader: loader.GLTFLoader,
+        }));
+    }
+    const core = await threeCoreDependencies;
+    if (!needsMeshopt) return { ...core, MeshoptDecoder: null };
+    meshoptDependency ??= import('three/addons/libs/meshopt_decoder.module.js')
+        .then((decoder) => decoder.MeshoptDecoder);
+    return { ...core, MeshoptDecoder: await meshoptDependency };
+};
 
 const stages = document.querySelectorAll('[data-home-hero-model], [data-home-echoes-model], [data-home-podcast-model], [data-home-repository-model], [data-podcast-single-model], [data-podcast-banner-model]');
 
@@ -20,6 +30,11 @@ stages.forEach((stage) => {
     if (!content) return;
     const modelUrl = stage.dataset.modelSrc;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const hardwareConcurrency = Number(navigator.hardwareConcurrency) || 0;
+    const deviceMemory = Number(navigator.deviceMemory) || 0;
+    const isLowPowerDevice = (hardwareConcurrency > 0 && hardwareConcurrency <= 4)
+        || (deviceMemory > 0 && deviceMemory <= 4)
+        || window.matchMedia('(pointer: coarse)').matches;
     const isHomeRepositoryModel = stage.matches('[data-home-repository-model]');
     const isHomePodcastModel = stage.matches('[data-home-podcast-model]');
     const isPodcastBannerModel = stage.matches('[data-podcast-banner-model]');
@@ -29,16 +44,11 @@ stages.forEach((stage) => {
         : isHomePodcastModel
             ? HOME_EDITORIAL_POSE.podcast
             : null;
-    const homeParticlesConfig = isHomePodcastModel
-        ? HOME_EDITORIAL_PARTICLES.podcast
-        : isHomeRepositoryModel
-            ? HOME_EDITORIAL_PARTICLES.repository
-            : null;
     const configuredRotationSpeed = Number.parseFloat(stage.dataset.modelRotationSpeed);
     const idleRotationSpeed = Number.isFinite(configuredRotationSpeed) ? configuredRotationSpeed : 0.11;
     const configuredModelRotation = (axis) => {
         const degrees = Number.parseFloat(stage.dataset[`modelRotation${axis.toUpperCase()}`]);
-        return Number.isFinite(degrees) ? THREE.MathUtils.degToRad(degrees) : 0;
+        return Number.isFinite(degrees) ? degrees * (Math.PI / 180) : 0;
     };
     const configuredModelPosition = (axis) => {
         const position = Number.parseFloat(stage.dataset[`modelPosition${axis.toUpperCase()}`]);
@@ -52,10 +62,12 @@ stages.forEach((stage) => {
     const modelPositionZ = configuredModelPosition('z');
 
     let renderer;
+    let THREE;
+    let GLTFLoader;
+    let MeshoptDecoder;
     let camera;
     let scene;
     let pivot;
-    let homeParticles;
     let generalCameraPosition;
     let animationFrame = 0;
     let lastRenderedAt = 0;
@@ -74,6 +86,8 @@ stages.forEach((stage) => {
     let lastPointerX = 0;
     let lastPointerY = 0;
     let lastPointerAt = 0;
+    let pendingInitialize = null;
+    let pendingInitializeIsIdle = false;
 
     const clamp = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value));
 
@@ -110,10 +124,6 @@ stages.forEach((stage) => {
             modelPositionZ,
         );
         pivot.scale.setScalar(modelScale);
-        if (homeParticles && !reducedMotion) {
-            homeParticles.rotation.y = elapsed * 0.19;
-            homeParticles.rotation.z = Math.sin(elapsed * 0.26) * 0.055;
-        }
         renderer.render(scene, camera);
     };
 
@@ -173,22 +183,25 @@ stages.forEach((stage) => {
         if ((!isHomeEditorialModel && !isPodcastBannerModel) || !camera || !pivot) return;
 
         let sceneRadius = 0;
-        (isHomeEditorialModel ? [pivot, homeParticles] : [pivot]).forEach((group) => {
-            if (!group) return;
-            group.updateMatrixWorld(true);
-            group.traverse((object) => {
-                if (!object.isMesh && !object.isPoints) return;
-                const geometry = object.geometry;
-                if (!geometry.boundingSphere) geometry.computeBoundingSphere();
-                const worldBounds = geometry.boundingSphere.clone().applyMatrix4(object.matrixWorld);
-                sceneRadius = Math.max(sceneRadius, worldBounds.center.length() + worldBounds.radius);
-            });
+        pivot.updateMatrixWorld(true);
+        pivot.traverse((object) => {
+            if (!object.isMesh && !object.isPoints) return;
+            const geometry = object.geometry;
+            if (!geometry.boundingSphere) geometry.computeBoundingSphere();
+            const worldBounds = geometry.boundingSphere.clone().applyMatrix4(object.matrixWorld);
+            sceneRadius = Math.max(sceneRadius, worldBounds.center.length() + worldBounds.radius);
         });
 
         const limitingHalfFov = Math.atan(
             Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * Math.min(camera.aspect, 1),
         );
-        const fitMargin = isPodcastBannerModel ? 1.3 : (homeParticlesConfig?.fitMargin ?? 1.12);
+        const fitMargin = isPodcastBannerModel
+            ? 1.3
+            : isHomePodcastModel
+                ? 1.03
+                : isHomeRepositoryModel
+                    ? .95
+                    : 1.12;
         const fitDistance = (sceneRadius / Math.sin(limitingHalfFov)) * fitMargin;
         const closestCameraDistance = fitDistance / 0.96;
         generalCameraPosition = camera.position.clone().normalize().multiplyScalar(
@@ -299,24 +312,29 @@ stages.forEach((stage) => {
         if (reducedMotion) renderPose(performance.now());
     });
 
-    const initialize = () => {
+    const initialize = async () => {
         if (hasLoaded || !modelUrl) return;
         hasLoaded = true;
 
         try {
-            renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'low-power' });
+            ({ THREE, GLTFLoader, MeshoptDecoder } = await loadThreeDependencies(stage.dataset.modelMeshopt === 'true'));
+            renderer = new THREE.WebGLRenderer({
+                alpha: true,
+                antialias: !isLowPowerDevice,
+                powerPreference: 'low-power',
+            });
         } catch (error) {
             stage.dataset.modelState = 'unsupported';
             return;
         }
 
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.25));
+        const pixelRatioLimit = isLowPowerDevice ? 1 : 1.15;
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, pixelRatioLimit));
         renderer.setClearColor(0x000000, 0);
         renderer.outputColorSpace = THREE.SRGBColorSpace;
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 1.15;
         renderer.domElement.setAttribute('aria-hidden', 'true');
-        stage.appendChild(renderer.domElement);
 
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(32, 1, 0.1, 30);
@@ -339,42 +357,12 @@ stages.forEach((stage) => {
         pivot.position.set(modelPositionX, modelPositionY, modelPositionZ);
         scene.add(pivot);
 
-        if (isHomeEditorialModel) {
-            homeParticles = new THREE.Group();
-            homeParticles.scale.setScalar(homeParticlesConfig.fitScale);
-            scene.add(homeParticles);
-
-            const particleCount = 240;
-            const particlePositions = new Float32Array(particleCount * 3);
-            for (let index = 0; index < particleCount; index += 1) {
-                const angle = Math.random() * Math.PI * 2;
-                const height = THREE.MathUtils.randFloat(-1.45, 1.45);
-                const radius = THREE.MathUtils.randFloat(1.18, 1.72);
-                const horizontalRadius = Math.sqrt(Math.max(0, 1 - (height / 1.8) ** 2)) * radius;
-                particlePositions[index * 3] = Math.cos(angle) * horizontalRadius;
-                particlePositions[index * 3 + 1] = height;
-                particlePositions[index * 3 + 2] = Math.sin(angle) * horizontalRadius;
-            }
-
-            const particleGeometry = new THREE.BufferGeometry();
-            particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
-            const particles = new THREE.Points(particleGeometry, new THREE.PointsMaterial({
-                color: 0xb49a6a,
-                size: 0.028,
-                transparent: true,
-                opacity: 0.8,
-                sizeAttenuation: true,
-                depthWrite: false,
-            }));
-            homeParticles.add(particles);
-        }
-
         const resizeObserver = new ResizeObserver(resize);
         resizeObserver.observe(stage);
         resize();
 
         const loader = new GLTFLoader();
-        loader.setMeshoptDecoder(MeshoptDecoder);
+        if (MeshoptDecoder) loader.setMeshoptDecoder(MeshoptDecoder);
         loader.load(modelUrl, (gltf) => {
             const model = gltf.scene;
             model.traverse((object) => {
@@ -406,18 +394,43 @@ stages.forEach((stage) => {
             if (isHomeEditorialModel || isPodcastBannerModel) {
                 fitEditorialCamera();
             }
-            if (isHomeEditorialModel) {
-                homeParticles.scale.setScalar(homeParticlesConfig.displayScale);
-            }
             if (isHomeEditorialModel || isPodcastBannerModel) {
                 updateEditorialCamera();
             }
+            stage.appendChild(renderer.domElement);
             stage.classList.add('is-ready');
             stage.dataset.modelState = 'ready';
             startRendering();
         }, undefined, () => {
             stage.dataset.modelState = 'error';
         });
+    };
+
+    const scheduleInitialize = () => {
+        if (!isVisible || hasLoaded || pendingInitialize !== null) return;
+
+        const start = () => {
+            pendingInitialize = null;
+            if (isVisible) initialize();
+        };
+
+        if ('requestIdleCallback' in window) {
+            pendingInitializeIsIdle = true;
+            pendingInitialize = window.requestIdleCallback(start, { timeout: 350 });
+        } else {
+            pendingInitializeIsIdle = false;
+            pendingInitialize = window.setTimeout(start, 100);
+        }
+    };
+
+    const cancelScheduledInitialize = () => {
+        if (pendingInitialize === null) return;
+        if (pendingInitializeIsIdle && 'cancelIdleCallback' in window) {
+            window.cancelIdleCallback(pendingInitialize);
+        } else {
+            window.clearTimeout(pendingInitialize);
+        }
+        pendingInitialize = null;
     };
 
     document.addEventListener('visibilitychange', () => {
@@ -432,9 +445,10 @@ stages.forEach((stage) => {
     if ('IntersectionObserver' in window) {
         const observer = new IntersectionObserver(([entry]) => {
             isVisible = entry.isIntersecting;
-            if (isVisible) initialize();
+            if (isVisible) scheduleInitialize();
             if (isVisible) startRendering();
             else {
+                cancelScheduledInitialize();
                 window.cancelAnimationFrame(animationFrame);
                 animationFrame = 0;
             }
@@ -442,6 +456,6 @@ stages.forEach((stage) => {
         observer.observe(stage);
     } else {
         isVisible = true;
-        initialize();
+        scheduleInitialize();
     }
 });

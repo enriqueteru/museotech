@@ -152,6 +152,10 @@
 }
 
 @media (max-width: 760px) {
+    .home-text-animation__line {
+        font-size: clamp(28px, 7.5vw, 46px);
+    }
+
     .section-banner {
         padding-block-start: clamp(96px, 14vh, 118px);
     }

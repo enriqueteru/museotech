@@ -98,6 +98,10 @@
     const setPlaying = (isPlaying) => {
         playButton.setAttribute('aria-pressed', isPlaying ? 'true' : 'false');
         playButton.setAttribute('aria-label', isPlaying ? playButton.dataset.pauseLabel : playButton.dataset.playLabel);
+        const visibleLabel = playButton.querySelector('[data-podcast-play-text]');
+        if (visibleLabel) {
+            visibleLabel.textContent = isPlaying ? playButton.dataset.pauseText : playButton.dataset.playText;
+        }
     };
 
     const updateProgress = () => {

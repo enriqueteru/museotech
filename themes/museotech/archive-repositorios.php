@@ -31,6 +31,7 @@ $contact_url = $contact_page ? get_permalink($contact_page) : home_url('/contact
         </div>
         <?php get_template_part('template-parts/components/podcast-banner-model', null, [
             'model_path' => 'assets/models/repository-book.glb',
+            'meshopt_compressed' => true,
             'component_class' => 'repository-banner-model',
             'model_scale' => 1.05,
             'rotation_speed' => 0.16,

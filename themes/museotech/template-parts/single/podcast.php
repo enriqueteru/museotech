@@ -8,7 +8,7 @@ $recording_date = trim((string) museotech_field('_fecha_de_grabacion'));
 $author_id = (int) get_the_author_meta('ID');
 $description_text = wp_strip_all_tags((string) $description);
 $excerpt = wp_trim_words($description_text !== '' ? $description_text : get_the_excerpt(), 28);
-$play_label = sprintf(__('Reproducir: %s', 'museotech'), get_the_title());
+$play_label = sprintf(__('Escuchar: %s', 'museotech'), get_the_title());
 $pause_label = sprintf(__('Pausar: %s', 'museotech'), get_the_title());
 $related_podcasts = new WP_Query([
     'post_type' => 'podcast',
@@ -38,12 +38,12 @@ $related_podcasts = new WP_Query([
                     <?php if ($audio_url) : ?>
                         <section class="podcast-single__player-panel" aria-labelledby="podcast-episode-title">
                             <div class="podcast-single__player" data-podcast-single-player>
-                                <button class="podcast-single__play-control" type="button" aria-label="<?php echo esc_attr($play_label); ?>" aria-pressed="false" data-play-label="<?php echo esc_attr($play_label); ?>" data-pause-label="<?php echo esc_attr($pause_label); ?>" data-podcast-single-play>
+                                <button class="podcast-single__play-control" type="button" aria-label="<?php echo esc_attr($play_label); ?>" aria-pressed="false" data-play-label="<?php echo esc_attr($play_label); ?>" data-pause-label="<?php echo esc_attr($pause_label); ?>" data-play-text="<?php esc_attr_e('Escuchar', 'museotech'); ?>" data-pause-text="<?php esc_attr_e('Pausar', 'museotech'); ?>" data-podcast-single-play>
                                     <span class="podcast-single__play-icon" aria-hidden="true">
                                         <svg class="podcast-single__icon-start" viewBox="0 0 24 24"><path d="M8 5.5v13l10-6.5L8 5.5Z"/></svg>
                                         <svg class="podcast-single__icon-pause" viewBox="0 0 24 24"><path d="M7 5h4v14H7V5Zm6 0h4v14h-4V5Z"/></svg>
                                     </span>
-                                    <span><?php esc_html_e('Escuchar', 'museotech'); ?></span>
+                                    <span data-podcast-play-text><?php esc_html_e('Escuchar', 'museotech'); ?></span>
                                 </button>
                                 <div class="podcast-single__player-visual">
                                     <span><?php esc_html_e('Episodio', 'museotech'); ?></span>

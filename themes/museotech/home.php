@@ -24,6 +24,7 @@ foreach (['museos', 'ia', 'arte', 'tecnologia', 'patrimonio'] as $category_slug)
         </div>
         <?php get_template_part('template-parts/components/podcast-banner-model', null, [
             'model_path' => 'assets/models/blog-pluma.glb',
+            'meshopt_compressed' => true,
             'component_class' => 'blog-banner-model',
             'model_scale' => 1.05,
             'rotation_speed' => 0.2,

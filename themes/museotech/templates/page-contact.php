@@ -21,7 +21,7 @@ get_header();
             <div class="contact-page__details">
                 <h1 class="contact-page__intro"><?php esc_html_e('Abramos juntos nuevas posibilidades. Escríbenos.', 'museotech'); ?></h1>
                 <div class="contact-page__item contact-page__social">
-                    <h4><?php esc_html_e('Redes sociales', 'museotech'); ?></h4>
+                    <h2><?php esc_html_e('Redes sociales', 'museotech'); ?></h2>
                     <p>
                         <?php foreach (museotech_social_links() as $label => $url) : ?>
                             <a href="<?php echo esc_url($url); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html($label); ?></a>

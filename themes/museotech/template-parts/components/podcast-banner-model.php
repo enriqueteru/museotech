@@ -20,6 +20,7 @@ $model_position_y = isset($component_args['model_position_y']) ? (float) $compon
 $model_position_z = isset($component_args['model_position_z']) ? (float) $component_args['model_position_z'] : 0;
 $model_offset_x = isset($component_args['model_offset_x']) ? (float) $component_args['model_offset_x'] : 0;
 $model_offset_y = isset($component_args['model_offset_y']) ? (float) $component_args['model_offset_y'] : 0;
+$meshopt_compressed = ! empty($component_args['meshopt_compressed']);
 $rotation_speed = max(-1.5, min(1.5, $rotation_speed));
 $model_scale = max(0.4, min(2.5, $model_scale));
 $model_rotation_x = max(-360, min(360, $model_rotation_x));
@@ -42,6 +43,7 @@ $component_class = isset($component_args['component_class']) && is_string($compo
         class="<?php echo esc_attr($component_class); ?>"
         data-podcast-banner-model
         data-model-src="<?php echo esc_url($model_url); ?>"
+        data-model-meshopt="<?php echo $meshopt_compressed ? 'true' : 'false'; ?>"
         data-model-rotation-speed="<?php echo esc_attr((string) $rotation_speed); ?>"
         data-model-scale="<?php echo esc_attr((string) $model_scale); ?>"
         data-model-rotation-x="<?php echo esc_attr((string) $model_rotation_x); ?>"

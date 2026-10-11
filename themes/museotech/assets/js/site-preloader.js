@@ -5,8 +5,8 @@
     const percentage = preloader.querySelector('[data-site-preloader-percentage]');
     const assetCount = preloader.querySelector('[data-site-preloader-asset-count]');
     const startedAt = performance.now();
-    const minimumVisibleTime = 500;
-    const maximumVisibleTime = 12000;
+    const minimumVisibleTime = 180;
+    const maximumLoadingTime = 7000;
     const imageGroups = new Map();
     const tasks = [];
     let loadedAssets = 0;
@@ -80,30 +80,32 @@
     }
 
     const visibleModels = Array.from(document.querySelectorAll('[data-model-src]')).filter((stage) => {
+        if (!stage.dataset.modelSrc) return false;
         const bounds = stage.getBoundingClientRect();
-        return Boolean(stage.dataset.modelSrc)
-            && bounds.width > 0
+        return bounds.width > 0
             && bounds.height > 0
-            && bounds.top < window.innerHeight + 120
-            && bounds.bottom > -120;
+            && bounds.top < window.innerHeight
+            && bounds.bottom > 0;
     });
 
     visibleModels.forEach((stage) => {
         tasks.push(new Promise((resolve) => {
-            let timeoutId;
+            let modelTimeoutId;
+            const observer = new MutationObserver(() => checkModelState());
             const finish = (loaded) => {
                 observer.disconnect();
-                window.clearTimeout(timeoutId);
+                window.clearTimeout(modelTimeoutId);
                 resolve(loaded);
             };
-            const readState = () => {
-                if (stage.dataset.modelState === 'ready') finish(true);
-                else if (['error', 'unsupported'].includes(stage.dataset.modelState)) finish(false);
+            const checkModelState = () => {
+                const state = stage.dataset.modelState;
+                if (state === 'ready') finish(true);
+                else if (state === 'error' || state === 'unsupported') finish(false);
             };
-            const observer = new MutationObserver(readState);
+
             observer.observe(stage, { attributes: true, attributeFilter: ['data-model-state'] });
-            timeoutId = window.setTimeout(() => finish(false), maximumVisibleTime - 1000);
-            readState();
+            modelTimeoutId = window.setTimeout(() => finish(false), maximumLoadingTime - 500);
+            checkModelState();
         }));
     });
 
@@ -117,7 +119,7 @@
     })));
 
     const timeout = new Promise((resolve) => {
-        maximumTimeoutId = window.setTimeout(resolve, maximumVisibleTime);
+        maximumTimeoutId = window.setTimeout(resolve, maximumLoadingTime);
     });
     Promise.race([allTasks, timeout]).then(async () => {
         window.clearTimeout(maximumTimeoutId);
@@ -144,7 +146,7 @@
                 if (event.target !== preloader || event.propertyName !== 'transform') return;
                 finish();
             };
-            fallback = window.setTimeout(finish, 800);
+            fallback = window.setTimeout(finish, 550);
             preloader.addEventListener('transitionend', onTransitionEnd);
         });
         announcePreloaderHidden();

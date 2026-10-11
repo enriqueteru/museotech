@@ -6,7 +6,7 @@
         $podcast_model_url = add_query_arg('ver', (string) filemtime($podcast_model_path), $podcast_model_url);
     }
     ?>
-    <section class="home-podcast" aria-labelledby="home-podcast-title">
+    <section class="home-podcast home-feature-stack__card home-feature-stack__card--podcast" aria-labelledby="home-podcast-title">
         <div class="home-podcast__content">
             <div class="home-podcast__copy" data-reveal-group>
                 <p class="home-podcast__eyebrow"><?php echo esc_html(museotech_option('podcast_eyebrow')); ?></p>
@@ -19,7 +19,7 @@
             </div>
             <?php if (is_file($podcast_model_path)) : ?>
                 <div class="home-podcast__visual">
-                    <div class="home-podcast__model" data-home-podcast-model data-model-src="<?php echo esc_url($podcast_model_url); ?>" role="group" tabindex="0" aria-label="<?php esc_attr_e('Modelo 3D interactivo. Arrástralo para girarlo o usa las flechas.', 'museotech'); ?>"></div>
+                    <div class="home-podcast__model" data-home-podcast-model data-model-src="<?php echo esc_url($podcast_model_url); ?>" data-model-meshopt="true" role="group" tabindex="0" aria-label="<?php esc_attr_e('Modelo 3D interactivo. Arrástralo para girarlo o usa las flechas.', 'museotech'); ?>"></div>
                 </div>
             <?php endif; ?>
         </div>

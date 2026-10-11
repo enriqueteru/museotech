@@ -10,7 +10,7 @@
     ?>
     <section class="home-hero" data-hero>
         <div class="home-hero__content">
-            <div class="home-hero__model" data-home-hero-model data-model-src="<?php echo esc_url($hero_model_url); ?>" role="group" tabindex="0" aria-label="<?php esc_attr_e('Modelo 3D interactivo. Arrástralo para girarlo o usa las flechas.', 'museotech'); ?>"></div>
+            <div class="home-hero__model" data-home-hero-model data-model-src="<?php echo esc_url($hero_model_url); ?>" data-model-meshopt="true" role="group" tabindex="0" aria-label="<?php esc_attr_e('Modelo 3D interactivo. Arrástralo para girarlo o usa las flechas.', 'museotech'); ?>"></div>
             <div class="home-hero__copy">
                 <h1 class="home-hero__headline" data-hero-title><?php esc_html_e('La cultura, conectada al futuro.', 'museotech'); ?></h1>
                 <?php if ($hero_description) : ?>

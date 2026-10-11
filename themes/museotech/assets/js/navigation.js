@@ -11,6 +11,9 @@
 
     const panels = [...menu.querySelectorAll('.site-menu__panel')];
     const items = [...menu.querySelectorAll('.site-menu__item')];
+    const menuBrand = menu.querySelector('.site-menu__brand');
+    const menuSocial = menu.querySelector('.site-menu__social');
+    const menuBranding = [menuBrand, menuSocial].filter(Boolean);
     const firstLink = menu.querySelector('.site-menu__list a') ?? menu.querySelector('a');
     const focusableSelector = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
     const pageRegions = [...document.body.children].filter((element) =>
@@ -145,18 +148,24 @@
 
         return window.gsap.timeline({ paused: true, onComplete: setClosed })
             .to(items, {
-                duration: 0.28,
+                duration: 0.2,
                 opacity: 0,
                 y: 24,
-                stagger: { each: 0.035, from: 'end' },
+                stagger: { each: 0.025, from: 'end' },
                 ease: 'power2.in',
-            })
+            }, 0)
+            .to(menuBranding, {
+                duration: 0.46,
+                autoAlpha: 0,
+                y: -8,
+                ease: 'power1.in',
+            }, 0)
             .to(panels, {
-                duration: 0.62,
+                duration: 0.36,
                 clipPath: 'polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)',
-                stagger: { each: 0.045, from: 'end' },
+                stagger: { each: 0.02, from: 'end' },
                 ease: 'power3.inOut',
-            }, '-=0.08');
+            }, 0);
     };
 
     const openMenu = () => {
@@ -191,6 +200,7 @@
 
         const hasAnimatedClose = Boolean(openTimeline && !reducedMotion.matches);
         setExpanded(false, hasAnimatedClose);
+        toggle.focus({ preventScroll: true });
 
         if (hasAnimatedClose) {
             openTimeline.pause();

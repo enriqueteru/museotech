@@ -15,6 +15,7 @@ $archive_heading = $archive_heading !== '' ? $archive_heading : $archive_title;
             </div>
             <?php get_template_part('template-parts/components/podcast-banner-model', null, [
                 'model_path' => 'assets/models/collaborator-hands.glb',
+                'meshopt_compressed' => true,
                 'component_class' => 'collaborator-banner-model',
                 'model_scale' => 1.05,
                 'rotation_speed' => 0.16,

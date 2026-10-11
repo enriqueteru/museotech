@@ -224,7 +224,7 @@ function museotech_core_enqueue_cookie_consent(): void
         plugins_url('assets/cookies-compliance/consent.min.js', __FILE__),
         [],
         $version,
-        false
+        ['in_footer' => true, 'strategy' => 'defer']
     );
 
     $style_path = __DIR__ . '/assets/cookies-compliance/consent-overrides.css';
@@ -244,7 +244,7 @@ function museotech_core_cookie_consent_script_tag(string $tag, string $handle, s
     }
 
     return sprintf(
-        '<script src="%1$s" data-config="%2$s" id="%3$s-js"></script>' . "\n",
+        '<script defer src="%1$s" data-config="%2$s" id="%3$s-js"></script>' . "\n",
         esc_url($src),
         esc_url(plugins_url('consent.json', __FILE__)),
         esc_attr($handle)
