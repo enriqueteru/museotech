@@ -87,7 +87,10 @@ body.blog {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: clamp(20px, 2vw, 30px);
     margin-inline: auto;
+    margin-top: clamp(52px, 8vh, 82px);
 }
+
+
 
 .news-archive-card {
     min-width: 0;

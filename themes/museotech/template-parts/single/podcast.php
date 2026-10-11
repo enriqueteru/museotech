@@ -1,10 +1,5 @@
 <?php
 $archive_url = get_post_type_archive_link('podcast');
-$podcast_model_path = get_theme_file_path('/assets/models/echoes-of-marble.glb');
-$podcast_model_url = get_theme_file_uri('/assets/models/echoes-of-marble.glb');
-if (file_exists($podcast_model_path)) {
-    $podcast_model_url = add_query_arg('ver', (string) filemtime($podcast_model_path), $podcast_model_url);
-}
 $description = museotech_field('descripcion_');
 $audio_url = museotech_file_url(museotech_field('audio'));
 $institution = trim((string) museotech_field('institucion'));
@@ -32,7 +27,6 @@ $related_podcasts = new WP_Query([
             <div class="podcast-single__layout">
                 <main class="podcast-single__main">
                     <header class="podcast-single__header">
-                        <?php get_template_part('template-parts/components/podcast-banner-model'); ?>
                         <p class="podcast-single__eyebrow">
                             <span><?php esc_html_e('Podcast', 'museotech'); ?></span>
                             <?php if ($recording_date !== '') : ?><span><?php echo esc_html($recording_date); ?></span><?php endif; ?>

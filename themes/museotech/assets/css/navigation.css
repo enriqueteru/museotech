@@ -331,9 +331,9 @@ body.has-open-menu {
 .site-footer__funding {
     min-height: 120px;
     padding: 30px clamp(24px, 5vw, 80px);
-    box-shadow: 0 0 20px rgba(80, 80, 80, 0.2);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
     background: #f8f8f8;
-    color: #242424;
+    color: #000000;
 }
 
 .site-footer__funding-inner,
@@ -372,7 +372,7 @@ body.has-open-menu {
 .site-footer__bottom {
     min-height: 148px;
     padding: 34px clamp(24px, 5vw, 80px);
-    background: #222;
+    background: #000000;
     color: #fff;
 }
 

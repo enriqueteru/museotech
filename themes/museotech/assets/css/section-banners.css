@@ -3,6 +3,92 @@
     padding-block-start: clamp(250px, 30vh, 280px);
 }
 
+.news-archive__header,
+.podcast-archive__header,
+.repository-archive__intro,
+.collaborators-page__banner-inner {
+    position: relative;
+    min-height: clamp(360px, 32vw, 480px);
+    isolation: isolate;
+}
+
+.section-banner__copy {
+    position: absolute;
+    z-index: 2;
+    bottom: clamp(40px, 5vh, 60px);
+    right: 0;
+    left: 0;
+    width: min(100%, 1040px);
+    margin: 0 auto;
+    padding-inline: clamp(20px, 5vw, 80px);
+    text-align: center;
+}
+
+.section-banner__copy .section-banner__title {
+    margin: 0 auto;
+}
+
+.section-banner__copy .section-banner__description {
+    margin-top: clamp(12px, 2vw, 30px);
+}
+
+.news-archive__header {
+    margin-bottom: 0;
+}
+
+.news-archive__filters {
+    margin: 30px auto clamp(40px, 5vh, 64px);
+}
+
+.repository-archive__filters {
+    margin: 0 auto clamp(32px, 4vh, 52px);
+}
+
+.news-archive__header > .blog-banner-model,
+.podcast-archive__header > .podcast-banner-model,
+.repository-archive__intro > .repository-banner-model,
+.collaborators-page__banner-inner > .collaborator-banner-model {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    left: 50%;
+    right: auto;
+    width: min(100%, 840px);
+    height: clamp(320px, 30vw, 460px);
+    margin: 0;
+    opacity: 0.42;
+    transform: translate(calc(-50% + var(--model-offset-x, 0px)), calc(-50% + var(--model-offset-y, 0px)));
+}
+
+@media (max-width: 760px) {
+    .news-archive__header,
+    .podcast-archive__header,
+    .repository-archive__intro,
+    .collaborators-page__banner-inner {
+        min-height: clamp(300px, 80vw, 380px);
+    }
+
+    .news-archive__filters {
+        margin: 30px -18px clamp(40px, 5vh, 56px);
+    }
+
+    .news-archive__header .section-banner__copy {
+        position: relative;
+        inset: auto;
+        width: 100%;
+        margin: 0 auto;
+        padding: 0;
+    }
+
+    .news-archive__header > .blog-banner-model,
+    .podcast-archive__header > .podcast-banner-model,
+    .repository-archive__intro > .repository-banner-model,
+    .collaborators-page__banner-inner > .collaborator-banner-model {
+        width: min(100%, 440px);
+        height: clamp(260px, 78vw, 380px);
+    }
+}
+
 .collaborators-page__banner.section-banner {
     padding-block-start: 0;
 }
@@ -45,6 +131,24 @@
     line-height: var(--type-body-line-height);
     text-transform: none;
     text-wrap: balance;
+}
+
+.home-text-animation__measure-word {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.home-text-animation__mask {
+    display: block;
+    overflow: hidden;
+    margin-bottom: -0.1em;
+    padding-bottom: 0.1em;
+}
+
+.home-text-animation__line {
+    display: inline-block;
+    width: max-content;
+    white-space: nowrap;
 }
 
 @media (max-width: 760px) {

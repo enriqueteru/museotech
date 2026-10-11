@@ -2,10 +2,11 @@
 <?php get_header(); ?>
 <main id="main-content" class="podcast-archive">
     <header class="podcast-archive__header section-banner">
+        <div class="section-banner__copy">
+            <h1 class="section-banner__title"><?php esc_html_e('Todos los podcasts', 'museotech'); ?></h1>
+            <p class="section-banner__description"><?php esc_html_e('Conversaciones sobre tecnología, museos y sociedad para escuchar cuando quieras.', 'museotech'); ?></p>
+        </div>
         <?php get_template_part('template-parts/components/podcast-banner-model'); ?>
-        <p class="section-banner__eyebrow"><?php esc_html_e('Podcasts Museotech', 'museotech'); ?></p>
-        <h1 class="section-banner__title"><?php esc_html_e('Todos los podcasts', 'museotech'); ?></h1>
-        <p class="section-banner__description"><?php esc_html_e('Conversaciones sobre tecnología, museos y sociedad para escuchar cuando quieras.', 'museotech'); ?></p>
     </header>
 
     <?php if (have_posts()) : ?>

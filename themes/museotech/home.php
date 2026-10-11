@@ -16,27 +16,30 @@ foreach (['museos', 'ia', 'arte', 'tecnologia', 'patrimonio'] as $category_slug)
 ?>
 <main id="main-content" class="news-archive">
     <header class="news-archive__header section-banner">
+        <div class="section-banner__copy">
+            <h1 class="section-banner__title"><?php esc_html_e('Todos los artículos', 'museotech'); ?></h1>
+            <?php if ($archive_description !== '') : ?>
+                <p class="section-banner__description"><?php echo esc_html($archive_description); ?></p>
+            <?php endif; ?>
+        </div>
         <?php get_template_part('template-parts/components/podcast-banner-model', null, [
             'model_path' => 'assets/models/blog-pluma.glb',
             'component_class' => 'blog-banner-model',
             'model_scale' => 1.05,
             'rotation_speed' => 0.2,
+            'model_rotation_z' => 48,
             'aria_label' => __('Pluma 3D interactiva. Arrástrala o usa las flechas para girarla; el giro automático respeta las preferencias de movimiento.', 'museotech'),
         ]); ?>
-        <p class="section-banner__eyebrow"><?php esc_html_e('Blog Museotech', 'museotech'); ?></p>
-        <h1 class="section-banner__title"><?php esc_html_e('Todos los artículos', 'museotech'); ?></h1>
-        <?php if ($archive_description !== '') : ?>
-            <p class="section-banner__description"><?php echo esc_html($archive_description); ?></p>
-        <?php endif; ?>
-        <nav class="news-archive__filters" aria-label="<?php esc_attr_e('Filtrar artículos por tema', 'museotech'); ?>">
-            <a class="ui-button ui-button--filter news-archive__filter<?php echo $active_topic === '' ? ' is-active' : ''; ?>" href="<?php echo esc_url($blog_url); ?>"<?php echo $active_topic === '' ? ' aria-current="page"' : ''; ?>><?php esc_html_e('Todos', 'museotech'); ?></a>
-            <?php foreach ($filter_categories as $category) : ?>
-                <a class="ui-button ui-button--filter news-archive__filter<?php echo $active_topic === $category->slug ? ' is-active' : ''; ?>" href="<?php echo esc_url(add_query_arg('tema', $category->slug, $blog_url)); ?>"<?php echo $active_topic === $category->slug ? ' aria-current="page"' : ''; ?>>
-                <?php echo esc_html(ucfirst($category->name)); ?>
-                </a>
-            <?php endforeach; ?>
-        </nav>
     </header>
+
+    <nav class="news-archive__filters" aria-label="<?php esc_attr_e('Filtrar artículos por tema', 'museotech'); ?>">
+        <a class="ui-button ui-button--filter news-archive__filter<?php echo $active_topic === '' ? ' is-active' : ''; ?>" href="<?php echo esc_url($blog_url); ?>"<?php echo $active_topic === '' ? ' aria-current="page"' : ''; ?>><?php esc_html_e('Todos', 'museotech'); ?></a>
+        <?php foreach ($filter_categories as $category) : ?>
+            <a class="ui-button ui-button--filter news-archive__filter<?php echo $active_topic === $category->slug ? ' is-active' : ''; ?>" href="<?php echo esc_url(add_query_arg('tema', $category->slug, $blog_url)); ?>"<?php echo $active_topic === $category->slug ? ' aria-current="page"' : ''; ?>>
+                <?php echo esc_html(ucfirst($category->name)); ?>
+            </a>
+        <?php endforeach; ?>
+    </nav>
 
     <?php if (have_posts()) : ?>
         <div class="news-archive__grid">

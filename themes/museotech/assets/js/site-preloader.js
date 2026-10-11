@@ -13,6 +13,11 @@
     let isLeaving = false;
     let maximumTimeoutId;
 
+    const announcePreloaderHidden = () => {
+        preloader.hidden = true;
+        window.dispatchEvent(new CustomEvent('museotech:preloader:hidden'));
+    };
+
     const updateProgress = () => {
         if (isLeaving) return;
         const totalAssets = tasks.length;
@@ -123,18 +128,25 @@
 
         isLeaving = true;
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            preloader.hidden = true;
+            announcePreloaderHidden();
             return;
         }
 
         preloader.classList.add('is-leaving');
         await new Promise((resolve) => {
-            const fallback = window.setTimeout(resolve, 800);
-            preloader.addEventListener('transitionend', () => {
+            let fallback;
+            const finish = () => {
                 window.clearTimeout(fallback);
+                preloader.removeEventListener('transitionend', onTransitionEnd);
                 resolve();
-            }, { once: true });
+            };
+            const onTransitionEnd = (event) => {
+                if (event.target !== preloader || event.propertyName !== 'transform') return;
+                finish();
+            };
+            fallback = window.setTimeout(finish, 800);
+            preloader.addEventListener('transitionend', onTransitionEnd);
         });
-        preloader.hidden = true;
+        announcePreloaderHidden();
     });
 })();

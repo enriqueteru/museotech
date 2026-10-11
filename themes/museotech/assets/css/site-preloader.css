@@ -21,13 +21,38 @@
     transform: translateY(-100%);
 }
 
+body:has(> .site-preloader.is-leaving:not([hidden])) :is(
+    [data-hero-title],
+    [data-hero-fade],
+    [data-scroll-title],
+    [data-scroll-fade],
+    .section-banner .section-banner__title,
+    .section-banner .section-banner__eyebrow,
+    .section-banner .section-banner__description,
+    .section-banner nav,
+    .news-archive__grid > *,
+    .news-archive__pagination,
+    .news-archive__empty,
+    .podcast-archive__episodes-header,
+    .podcast-archive__grid > *,
+    .podcast-archive__episodes > .navigation,
+    .podcast-archive__empty,
+    .repository-archive__sidebar,
+    .repository-archive__records > *,
+    .collaborators-page__grid > *,
+    .collaborators-page__list > .navigation,
+    .collaborators-page__empty
+) {
+    visibility: hidden;
+}
+
 .site-preloader__brand {
     position: absolute;
     top: 50%;
     left: 50%;
     display: flex;
-    width: min(72vw, 760px);
-    height: min(34vh, 300px);
+    width: min(50vw, 500px);
+    height: min(20vh, 200px);
     align-items: center;
     justify-content: center;
     transform: translate(-50%, -50%);
@@ -109,22 +134,72 @@
     text-align: right;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 760px) {
     .site-preloader {
-        padding: 22px;
+        padding: 20px;
     }
 
     .site-preloader__content {
-        width: min(100%, 360px);
+        width: min(100%, 420px);
     }
 
     .site-preloader__brand {
         width: min(84vw, 480px);
-        height: min(28vh, 220px);
+        height: min(24svh, 190px);
     }
 
     .site-preloader__percentage {
-        font-size: clamp(62px, 20vw, 88px);
+        font-size: clamp(56px, 15vw, 82px);
+    }
+
+    .site-preloader__row {
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .site-preloader__label {
+        font-size: 10px;
+    }
+
+    .site-preloader__asset-count {
+        max-width: 70%;
+        font-size: 9px;
+        line-height: 1.4;
+    }
+}
+
+@media (max-width: 420px) {
+    .site-preloader {
+        padding: 18px;
+    }
+
+    .site-preloader__brand {
+        width: 86vw;
+        height: min(20svh, 150px);
+    }
+
+    .site-preloader__percentage {
+        font-size: clamp(52px, 16vw, 68px);
+    }
+
+    .site-preloader__label {
+        letter-spacing: 0.07em;
+    }
+}
+
+@media (max-width: 760px) and (max-height: 500px) {
+    .site-preloader__brand {
+        top: 38%;
+        width: min(56vw, 340px);
+        height: min(18svh, 90px);
+    }
+
+    .site-preloader__content {
+        width: min(62vw, 420px);
+    }
+
+    .site-preloader__percentage {
+        font-size: clamp(46px, 10vw, 66px);
     }
 }
 

@@ -56,7 +56,7 @@ body.post-type-archive-podcast {
 
 .podcast-archive__header > div {
     width: min(100%, 650px);
-    margin: 34px auto 0;
+    margin: 0 auto;
     color: var(--podcast-copy);
     font-size: clamp(17px, 1.35vw, 21px);
     line-height: 1.45;

@@ -8,18 +8,18 @@
     ]);
     ?>
     <section class="home-news" aria-labelledby="home-news-title">
-        <header class="home-news__header">
+        <header class="home-news__header" data-reveal-group>
             <div class="home-news__intro">
                 <?php if (museotech_option('news_eyebrow')) : ?>
                     <p>Blog</p>
                 <?php endif; ?>
-                <h2 id="home-news-title"><?php echo esc_html(museotech_option('news_eyebrow')); ?></h2>
+                <h2 id="home-news-title" data-scroll-title><?php echo esc_html(museotech_option('news_eyebrow')); ?></h2>
                 <?php if (museotech_option('news_description')) : ?>
-                    <div class="home-news__description"><?php echo museotech_formatted_text(museotech_option('news_description')); ?></div>
+                    <div class="home-news__description" data-scroll-fade><?php echo museotech_formatted_text(museotech_option('news_description')); ?></div>
                 <?php endif; ?>
             </div>
             <?php if (museotech_option('news_button_label') && museotech_option('news_button_url')) : ?>
-                <a class="ui-button" href="<?php echo esc_url(museotech_option('news_button_url')); ?>"><?php echo esc_html(museotech_option('news_button_label')); ?></a>
+                <a class="ui-button" data-scroll-fade data-magnetic href="<?php echo esc_url(museotech_option('news_button_url')); ?>"><?php echo esc_html(museotech_option('news_button_label')); ?></a>
             <?php endif; ?>
         </header>
         <?php if ($news->have_posts()) : ?>

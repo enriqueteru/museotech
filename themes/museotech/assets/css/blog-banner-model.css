@@ -2,7 +2,7 @@
     position: relative;
     width: min(100%, 520px);
     height: clamp(210px, 23vw, 280px);
-    margin: 0 auto 4px;
+    margin: 0 auto;
     cursor: grab;
     touch-action: pan-y;
     user-select: none;
@@ -34,7 +34,7 @@
     .blog-banner-model {
         width: min(100%, 440px);
         height: clamp(160px, 46vw, 220px);
-        margin-bottom: 2px;
+        margin-top: 0;
     }
 }
 

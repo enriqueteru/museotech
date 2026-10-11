@@ -23,6 +23,12 @@ $contact_url = $contact_page ? get_permalink($contact_page) : home_url('/contact
 ?>
 <main id="main-content" class="repository-archive">
     <header class="repository-archive__intro section-banner">
+        <div class="section-banner__copy">
+            <h1 class="section-banner__title"><?php esc_html_e('Repositorio', 'museotech'); ?></h1>
+            <?php if ($archive_intro !== '') : ?>
+                <p class="section-banner__description"><?php echo esc_html($archive_intro); ?></p>
+            <?php endif; ?>
+        </div>
         <?php get_template_part('template-parts/components/podcast-banner-model', null, [
             'model_path' => 'assets/models/repository-book.glb',
             'component_class' => 'repository-banner-model',
@@ -30,17 +36,14 @@ $contact_url = $contact_page ? get_permalink($contact_page) : home_url('/contact
             'rotation_speed' => 0.16,
             'aria_label' => __('Libro 3D interactivo. Arrástralo o usa las flechas para girarlo; el giro automático respeta las preferencias de movimiento.', 'museotech'),
         ]); ?>
-        <h1 class="section-banner__title"><?php esc_html_e('Repositorio', 'museotech'); ?></h1>
-        <?php if ($archive_intro !== '') : ?>
-            <p class="section-banner__description"><?php echo esc_html($archive_intro); ?></p>
-        <?php endif; ?>
-        <nav class="repository-archive__filters" aria-label="<?php esc_attr_e('Filtrar repositorios por formato', 'museotech'); ?>">
-            <a class="ui-button ui-button--filter repository-archive__filter<?php echo $active_format === '' ? ' is-active' : ''; ?>" href="<?php echo esc_url($repository_archive_url); ?>"<?php echo $active_format === '' ? ' aria-current="page"' : ''; ?>><?php esc_html_e('Todos', 'museotech'); ?></a>
-            <?php foreach ($repository_formats as $format) : ?>
-                <a class="ui-button ui-button--filter repository-archive__filter<?php echo $active_format === $format->slug ? ' is-active' : ''; ?>" href="<?php echo esc_url(add_query_arg('formato', $format->slug, $repository_archive_url)); ?>"<?php echo $active_format === $format->slug ? ' aria-current="page"' : ''; ?>><?php echo esc_html($format->name); ?></a>
-            <?php endforeach; ?>
-        </nav>
     </header>
+
+    <nav class="repository-archive__filters" aria-label="<?php esc_attr_e('Filtrar repositorios por formato', 'museotech'); ?>">
+        <a class="ui-button ui-button--filter repository-archive__filter<?php echo $active_format === '' ? ' is-active' : ''; ?>" href="<?php echo esc_url($repository_archive_url); ?>"<?php echo $active_format === '' ? ' aria-current="page"' : ''; ?>><?php esc_html_e('Todos', 'museotech'); ?></a>
+        <?php foreach ($repository_formats as $format) : ?>
+            <a class="ui-button ui-button--filter repository-archive__filter<?php echo $active_format === $format->slug ? ' is-active' : ''; ?>" href="<?php echo esc_url(add_query_arg('formato', $format->slug, $repository_archive_url)); ?>"<?php echo $active_format === $format->slug ? ' aria-current="page"' : ''; ?>><?php echo esc_html($format->name); ?></a>
+        <?php endforeach; ?>
+    </nav>
 
     <div class="repository-archive__layout">
         <aside class="repository-archive__sidebar" aria-labelledby="repository-contribute-title">

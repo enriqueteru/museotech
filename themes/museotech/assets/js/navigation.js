@@ -20,7 +20,8 @@
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     let isOpen = false;
     let isCompact = null;
-    let timeline;
+    let openTimeline;
+    let closeTimeline;
 
     const setHeaderSize = (compact, immediate = false) => {
         const isMobile = window.matchMedia('(max-width: 700px)').matches;
@@ -96,7 +97,7 @@
         toggle.focus({ preventScroll: true });
     };
 
-    const setExpanded = (expanded) => {
+    const setExpanded = (expanded, keepMenuVisual = false) => {
         isOpen = expanded;
         toggle.setAttribute('aria-expanded', String(expanded));
         toggle.setAttribute(
@@ -108,31 +109,54 @@
         pageRegions.forEach((element) => {
             element.inert = expanded;
         });
-        document.body.classList.toggle('has-open-menu', expanded);
+        document.body.classList.toggle('has-open-menu', expanded || keepMenuVisual);
     };
 
-    const buildTimeline = () => {
+    const buildOpenTimeline = () => {
         if (!window.gsap) {
             return null;
         }
 
-        return window.gsap.timeline({
-            paused: true,
-            onReverseComplete: setClosed,
-        })
-            .to(panels, {
+        return window.gsap.timeline({ paused: true })
+            .fromTo(panels, {
+                clipPath: 'polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)',
+            }, {
                 duration: 0.85,
                 clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
                 stagger: 0.065,
                 ease: 'power3.inOut',
             })
-            .to(items, {
+            .fromTo(items, {
+                opacity: 0,
+                y: 18,
+            }, {
                 duration: 0.32,
                 opacity: 1,
                 y: 0,
                 stagger: 0.055,
                 ease: 'power2.out',
             }, '-=0.4');
+    };
+
+    const buildCloseTimeline = () => {
+        if (!window.gsap) {
+            return null;
+        }
+
+        return window.gsap.timeline({ paused: true, onComplete: setClosed })
+            .to(items, {
+                duration: 0.28,
+                opacity: 0,
+                y: 24,
+                stagger: { each: 0.035, from: 'end' },
+                ease: 'power2.in',
+            })
+            .to(panels, {
+                duration: 0.62,
+                clipPath: 'polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)',
+                stagger: { each: 0.045, from: 'end' },
+                ease: 'power3.inOut',
+            }, '-=0.08');
     };
 
     const openMenu = () => {
@@ -142,10 +166,11 @@
 
         menu.hidden = false;
         setExpanded(true);
-        timeline ??= buildTimeline();
+        closeTimeline?.pause(0);
+        openTimeline ??= buildOpenTimeline();
 
-        if (timeline && !reducedMotion.matches) {
-            timeline.play();
+        if (openTimeline && !reducedMotion.matches) {
+            openTimeline.progress(0).play();
         } else {
             panels.forEach((panel) => {
                 panel.style.clipPath = 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)';
@@ -164,10 +189,13 @@
             return;
         }
 
-        setExpanded(false);
+        const hasAnimatedClose = Boolean(openTimeline && !reducedMotion.matches);
+        setExpanded(false, hasAnimatedClose);
 
-        if (timeline && !reducedMotion.matches) {
-            timeline.reverse();
+        if (hasAnimatedClose) {
+            openTimeline.pause();
+            closeTimeline ??= buildCloseTimeline();
+            closeTimeline.progress(0).play();
             return;
         }
 

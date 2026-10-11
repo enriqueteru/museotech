@@ -36,6 +36,20 @@ stages.forEach((stage) => {
             : null;
     const configuredRotationSpeed = Number.parseFloat(stage.dataset.modelRotationSpeed);
     const idleRotationSpeed = Number.isFinite(configuredRotationSpeed) ? configuredRotationSpeed : 0.11;
+    const configuredModelRotation = (axis) => {
+        const degrees = Number.parseFloat(stage.dataset[`modelRotation${axis.toUpperCase()}`]);
+        return Number.isFinite(degrees) ? THREE.MathUtils.degToRad(degrees) : 0;
+    };
+    const configuredModelPosition = (axis) => {
+        const position = Number.parseFloat(stage.dataset[`modelPosition${axis.toUpperCase()}`]);
+        return Number.isFinite(position) ? position : 0;
+    };
+    const modelRotationX = configuredModelRotation('x');
+    const modelRotationY = configuredModelRotation('y');
+    const modelRotationZ = configuredModelRotation('z');
+    const modelPositionX = configuredModelPosition('x');
+    const modelPositionY = configuredModelPosition('y');
+    const modelPositionZ = configuredModelPosition('z');
 
     let renderer;
     let camera;
@@ -85,11 +99,16 @@ stages.forEach((stage) => {
             autoRotation += delta * idleRotationSpeed;
         }
 
-        const baseYaw = homeModelPose?.yaw ?? -0.38;
-        const basePitch = homeModelPose?.pitch ?? 0;
+        const baseYaw = (homeModelPose?.yaw ?? -0.38) + modelRotationY;
+        const basePitch = (homeModelPose?.pitch ?? 0) + modelRotationX;
         pivot.rotation.y = baseYaw + dragRotationY + (isHomeEditorialModel ? 0 : autoRotation);
         pivot.rotation.x = basePitch + dragRotationX + (isHomeEditorialModel || reducedMotion ? 0 : Math.sin(elapsed * 0.7) * 0.012);
-        pivot.position.y = isHomeEditorialModel || reducedMotion ? 0 : Math.sin(elapsed * 0.8) * 0.025;
+        pivot.rotation.z = modelRotationZ;
+        pivot.position.set(
+            modelPositionX,
+            modelPositionY + (isHomeEditorialModel || reducedMotion ? 0 : Math.sin(elapsed * 0.8) * 0.025),
+            modelPositionZ,
+        );
         pivot.scale.setScalar(modelScale);
         if (homeParticles && !reducedMotion) {
             homeParticles.rotation.y = elapsed * 0.19;
@@ -169,7 +188,7 @@ stages.forEach((stage) => {
         const limitingHalfFov = Math.atan(
             Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * Math.min(camera.aspect, 1),
         );
-        const fitMargin = homeParticlesConfig?.fitMargin ?? 1.12;
+        const fitMargin = isPodcastBannerModel ? 1.3 : (homeParticlesConfig?.fitMargin ?? 1.12);
         const fitDistance = (sceneRadius / Math.sin(limitingHalfFov)) * fitMargin;
         const closestCameraDistance = fitDistance / 0.96;
         generalCameraPosition = camera.position.clone().normalize().multiplyScalar(
@@ -316,6 +335,8 @@ stages.forEach((stage) => {
         scene.add(rimLight);
 
         pivot = new THREE.Group();
+        pivot.rotation.set(modelRotationX, (homeModelPose?.yaw ?? -0.38) + modelRotationY, modelRotationZ);
+        pivot.position.set(modelPositionX, modelPositionY, modelPositionZ);
         scene.add(pivot);
 
         if (isHomeEditorialModel) {

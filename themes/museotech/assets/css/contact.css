@@ -276,6 +276,7 @@ body:has(.contact-page) .contact-page__announcement {
 }
 
 .museotech-contact-form__submit-row {
+    margin-top: 24px;
     display: flex;
     align-items: center;
     justify-content: space-between;

@@ -47,7 +47,7 @@ body.home {
 .home-hero__headline {
     max-width: 100%;
     margin: 0 auto;
-    font-size: var(--type-heading-size);
+    font-size: 80px !important ;
     font-weight: 400;
     letter-spacing: -0.06em;
     line-height: var(--type-heading-line-height);
@@ -157,7 +157,8 @@ body.home {
     display: grid;
     min-height: 190px;
     grid-template-columns: 88px minmax(0, 1fr);
-    gap: 24px;
+    align-items: start;
+    column-gap: clamp(20px, 3vw, 40px);
     padding: 34px clamp(0px, 3vw, 48px) 38px 0;
     border-top: 1px solid #d0d0ca;
 }
@@ -168,11 +169,42 @@ body.home {
 }
 
 .home-objectives__item span {
+    display: block;
     color: #85857f;
-    font-size: 13px;
+    font-size: 70px;
+    line-height: 0.9;
+}
+
+.home-objectives__item h4 {
+    align-self: start;
+    margin: -8px 0 0;
+    line-height: 0.9;
+}
+
+.home-objectives__item .home-counter {
+    display: inline-flex;
+    align-items: flex-start;
+    font-variant-numeric: tabular-nums;
+}
+
+.home-counter__digit {
+    display: block;
+    height: 0.9em;
+    overflow: hidden;
+}
+
+.home-counter__track,
+.home-counter__value {
+    display: block;
+}
+
+.home-counter__value {
+    height: 0.9em;
+    line-height: 0.9em;
 }
 
 .home-objectives__item p {
+    align-self: start;
     max-width: 34ch;
     margin: 0;
     font-size: clamp(18px, 1.7vw, 27px);
@@ -496,13 +528,21 @@ body.home {
     .home-objectives__item,
     .home-objectives__item:nth-child(even) {
         min-height: 0;
-        grid-template-columns: 52px minmax(0, 1fr);
-        gap: 14px;
+        grid-template-columns: clamp(60px, 18vw, 72px) minmax(0, 1fr);
+        column-gap: clamp(22px, 6vw, 32px);
         padding: 26px 0 30px;
+    }
+
+    .home-objectives__item h4 {
+        margin-top: 0;
     }
 
     .home-objectives__item p {
         font-size: 21px;
+    }
+
+    .home-objectives__item span {
+        font-size: 50px;
     }
 
     .home-echoes {
@@ -801,4 +841,36 @@ body.home {
         transition: none;
     }
 
+}
+
+.home-text-animation__measure-word {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.home-text-animation__mask {
+    display: block;
+    overflow: hidden;
+    margin-bottom: -0.1em;
+    padding-bottom: 0.1em;
+}
+
+.home-text-animation__line {
+    display: inline-block;
+    width: max-content;
+    white-space: nowrap;
+}
+
+@media (min-width: 900px) and (max-height: 940px) {
+    .home-hero {
+        padding-top: clamp(180px, 19vh, 230px);
+    }
+
+    .home-hero__headline {
+        font-size: min(var(--type-heading-size), 36px) !important;
+    }
+
+    .home-hero__description {
+        margin-top: 28px;
+    }
 }
