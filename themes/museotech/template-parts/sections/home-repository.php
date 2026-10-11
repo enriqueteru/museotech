@@ -1,7 +1,7 @@
 <?php if (museotech_option('repository_visible')) : ?>
     <?php
-    $repository_model_path = get_theme_file_path('/assets/models/thinker.glb');
-    $repository_model_url = get_theme_file_uri('/assets/models/thinker.glb');
+    $repository_model_path = get_theme_file_path('/assets/models/thinker-optimized.glb');
+    $repository_model_url = get_theme_file_uri('/assets/models/thinker-optimized.glb');
     if (is_file($repository_model_path)) {
         $repository_model_url = add_query_arg('ver', (string) filemtime($repository_model_path), $repository_model_url);
     }

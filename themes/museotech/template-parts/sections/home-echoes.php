@@ -1,6 +1,6 @@
 <?php
-$echoes_model_path = get_theme_file_path('/assets/models/echoes-of-marble.glb');
-$echoes_model_url = get_theme_file_uri('/assets/models/echoes-of-marble.glb');
+$echoes_model_path = get_theme_file_path('/assets/models/echoes-of-marble-optimized.glb');
+$echoes_model_url = get_theme_file_uri('/assets/models/echoes-of-marble-optimized.glb');
 
 if (is_file($echoes_model_path)) {
     $echoes_model_url = add_query_arg('ver', (string) filemtime($echoes_model_path), $echoes_model_url);

@@ -2,8 +2,8 @@
     <?php
     $description_parts = preg_split('/\R\s*\R/', trim((string) museotech_option('hero_description'))) ?: [];
     $hero_description = $description_parts[0] ?? '';
-    $hero_model_path = get_theme_file_path('/assets/models/face2.glb');
-    $hero_model_url = get_theme_file_uri('/assets/models/face2.glb');
+    $hero_model_path = get_theme_file_path('/assets/models/face2-optimized.glb');
+    $hero_model_url = get_theme_file_uri('/assets/models/face2-optimized.glb');
     if (file_exists($hero_model_path)) {
         $hero_model_url = add_query_arg('ver', (string) filemtime($hero_model_path), $hero_model_url);
     }

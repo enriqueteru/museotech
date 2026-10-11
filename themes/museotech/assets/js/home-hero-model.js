@@ -39,6 +39,7 @@ stages.forEach((stage) => {
     const isHomePodcastModel = stage.matches('[data-home-podcast-model]');
     const isPodcastBannerModel = stage.matches('[data-podcast-banner-model]');
     const isHomeEditorialModel = isHomeRepositoryModel || isHomePodcastModel;
+    const shouldAnimateIdle = !reducedMotion && !isLowPowerDevice && !isHomeEditorialModel;
     const homeModelPose = isHomeRepositoryModel
         ? HOME_EDITORIAL_POSE.repository
         : isHomePodcastModel
@@ -98,7 +99,7 @@ stages.forEach((stage) => {
         lastPoseAt = timestamp;
         const elapsed = timestamp * 0.001;
 
-        if (!reducedMotion && !isDragging && !isHomeEditorialModel) {
+        if (shouldAnimateIdle && !isDragging) {
             dragRotationY += angularVelocityY * delta;
             const nextPitch = dragRotationX + angularVelocityX * delta;
             dragRotationX = clamp(nextPitch, -0.55, 0.55);
@@ -116,11 +117,11 @@ stages.forEach((stage) => {
         const baseYaw = (homeModelPose?.yaw ?? -0.38) + modelRotationY;
         const basePitch = (homeModelPose?.pitch ?? 0) + modelRotationX;
         pivot.rotation.y = baseYaw + dragRotationY + (isHomeEditorialModel ? 0 : autoRotation);
-        pivot.rotation.x = basePitch + dragRotationX + (isHomeEditorialModel || reducedMotion ? 0 : Math.sin(elapsed * 0.7) * 0.012);
+        pivot.rotation.x = basePitch + dragRotationX + (shouldAnimateIdle ? Math.sin(elapsed * 0.7) * 0.012 : 0);
         pivot.rotation.z = modelRotationZ;
         pivot.position.set(
             modelPositionX,
-            modelPositionY + (isHomeEditorialModel || reducedMotion ? 0 : Math.sin(elapsed * 0.8) * 0.025),
+            modelPositionY + (shouldAnimateIdle ? Math.sin(elapsed * 0.8) * 0.025 : 0),
             modelPositionZ,
         );
         pivot.scale.setScalar(modelScale);
@@ -136,7 +137,7 @@ stages.forEach((stage) => {
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
 
-        if (reducedMotion && pivot) renderPose(performance.now());
+        if (!shouldAnimateIdle && pivot) renderPose(performance.now());
     };
 
     const render = (timestamp) => {
@@ -156,7 +157,7 @@ stages.forEach((stage) => {
     const startRendering = () => {
         if (!renderer || !pivot || !isVisible || document.hidden) return;
 
-        if (reducedMotion) {
+        if (!shouldAnimateIdle) {
             renderPose(performance.now());
             return;
         }
@@ -176,7 +177,7 @@ stages.forEach((stage) => {
 
         camera.position.copy(generalCameraPosition);
         camera.lookAt(0, 0, 0);
-        if (reducedMotion) renderPose(performance.now());
+        if (!shouldAnimateIdle) renderPose(performance.now());
     };
 
     const fitEditorialCamera = () => {
@@ -292,7 +293,7 @@ stages.forEach((stage) => {
         lastPointerY = event.clientY;
         lastPointerAt = now;
 
-        if (reducedMotion) renderPose(performance.now());
+        if (!shouldAnimateIdle) renderPose(performance.now());
     });
 
     content.addEventListener('pointerup', endDrag);
@@ -309,7 +310,7 @@ stages.forEach((stage) => {
         else return;
 
         event.preventDefault();
-        if (reducedMotion) renderPose(performance.now());
+        if (!shouldAnimateIdle) renderPose(performance.now());
     });
 
     const initialize = async () => {

@@ -1,7 +1,7 @@
 <?php if (museotech_option('podcast_visible')) : ?>
     <?php
-    $podcast_model_path = get_theme_file_path('/assets/models/podcast.glb');
-    $podcast_model_url = get_theme_file_uri('/assets/models/podcast.glb');
+    $podcast_model_path = get_theme_file_path('/assets/models/podcast-optimized.glb');
+    $podcast_model_url = get_theme_file_uri('/assets/models/podcast-optimized.glb');
     if (is_file($podcast_model_path)) {
         $podcast_model_url = add_query_arg('ver', (string) filemtime($podcast_model_path), $podcast_model_url);
     }
