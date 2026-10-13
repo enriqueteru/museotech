@@ -14,8 +14,8 @@
     const menuBrand = menu.querySelector('.site-menu__brand');
     const menuSocial = menu.querySelector('.site-menu__social');
     const menuBranding = [menuBrand, menuSocial].filter(Boolean);
-    const firstLink = menu.querySelector('.site-menu__list a') ?? menu.querySelector('a');
-    const focusableSelector = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    const firstLink = menu.querySelector('a');
+    const focusableSelector = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
     const pageRegions = [...document.body.children].filter((element) =>
         !element.contains(menu) && !['SCRIPT', 'STYLE', 'LINK'].includes(element.tagName)
     );
@@ -110,7 +110,7 @@
         menu.setAttribute('aria-hidden', String(!expanded));
         menu.inert = !expanded;
         pageRegions.forEach((element) => {
-            element.inert = expanded;
+            element.inert = expanded ? true : originalInertState.get(element);
         });
         document.body.classList.toggle('has-open-menu', expanded || keepMenuVisual);
     };
@@ -232,16 +232,28 @@
         }
     });
 
-    menu.addEventListener('keydown', (event) => {
-        if (event.key !== 'Tab') {
+    const getMenuFocusableElements = () => [toggle, ...menu.querySelectorAll(focusableSelector)]
+        .filter((element) => !element.disabled && !element.closest('[hidden], [inert], [aria-hidden="true"]')
+            && element.getClientRects().length > 0);
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Tab') {
+            document.body.classList.add('is-keyboard-navigation');
+            window.dispatchEvent(new CustomEvent('museotech:keyboard-navigation'));
+        }
+
+        if (event.key !== 'Tab' || !isOpen) {
             return;
         }
 
-        const focusable = [...menu.querySelectorAll(focusableSelector)];
+        const focusable = getMenuFocusableElements();
         const first = focusable[0];
         const last = focusable.at(-1);
 
-        if (event.shiftKey && document.activeElement === first) {
+        if (!focusable.includes(document.activeElement)) {
+            event.preventDefault();
+            first?.focus();
+        } else if (event.shiftKey && document.activeElement === first) {
             event.preventDefault();
             last?.focus();
         } else if (!event.shiftKey && document.activeElement === last) {
@@ -250,10 +262,23 @@
         }
     });
 
+    document.addEventListener('pointerdown', () => {
+        document.body.classList.remove('is-keyboard-navigation');
+    }, { passive: true });
+
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape' && isOpen) {
+            event.preventDefault();
             closeMenu();
         }
+    });
+
+    const skipLink = document.querySelector('.skip-link');
+    const main = document.querySelector('#main-content');
+    skipLink?.addEventListener('click', () => {
+        if (!main) return;
+        main.setAttribute('tabindex', '-1');
+        requestAnimationFrame(() => main.focus({ preventScroll: true }));
     });
 
     menu.inert = true;

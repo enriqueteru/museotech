@@ -179,14 +179,15 @@ const createInteractionController = (stage, content, shouldAnimateIdle, isReady,
     };
 };
 
-const createRenderer = (THREE, isLowPowerDevice) => new THREE.WebGLRenderer({
+const createRenderer = (THREE, isLowPowerDevice, isEditorialModel) => new THREE.WebGLRenderer({
     alpha: true,
-    antialias: !isLowPowerDevice,
+    antialias: isEditorialModel || !isLowPowerDevice,
     powerPreference: 'low-power',
 });
 
-const configureRenderer = (THREE, renderer, isLowPowerDevice) => {
-    const pixelRatioLimit = isLowPowerDevice ? 1 : 1.15;
+const configureRenderer = (THREE, renderer, isLowPowerDevice, isEditorialModel) => {
+    const isMobileEditorialModel = isEditorialModel && window.matchMedia('(max-width: 760px)').matches;
+    const pixelRatioLimit = isMobileEditorialModel ? 1.75 : isLowPowerDevice ? 1 : 1.15;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, pixelRatioLimit));
     renderer.setClearColor(0x000000, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -459,13 +460,13 @@ const mountModelStage = (stage) => {
 
         try {
             ({ THREE, GLTFLoader, MeshoptDecoder } = await loadThreeDependencies(stage.dataset.modelMeshopt === 'true'));
-            renderer = createRenderer(THREE, isLowPowerDevice);
+            renderer = createRenderer(THREE, isLowPowerDevice, options.isHomeEditorialModel);
         } catch (error) {
             stage.dataset.modelState = 'unsupported';
             return;
         }
 
-        configureRenderer(THREE, renderer, isLowPowerDevice);
+        configureRenderer(THREE, renderer, isLowPowerDevice, options.isHomeEditorialModel);
         ({ scene, camera, pivot } = createScene(THREE, options));
 
         const resizeObserver = new ResizeObserver(resize);

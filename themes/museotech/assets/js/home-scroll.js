@@ -52,55 +52,61 @@
         });
     });
 
-    featureStacks.forEach((stack) => {
-        const stage = stack.querySelector('.home-feature-stack__stage');
-        const cards = [...stack.querySelectorAll('.home-feature-stack__stage > .home-feature-stack__card')];
-        if (!stage || cards.length !== 2) return;
+    const featureStackMedia = gsap.matchMedia();
+    featureStackMedia.add('(min-width: 761px)', () => {
+        featureStacks.forEach((stack) => {
+            const stage = stack.querySelector('.home-feature-stack__stage');
+            const cards = [...stack.querySelectorAll('.home-feature-stack__stage > .home-feature-stack__card')];
+            if (!stage || cards.length !== 2) return;
 
-        const [podcastCard, repositoryCard] = cards;
-        stack.classList.add('is-scroll-enhanced');
-        gsap.set(podcastCard, { transformOrigin: 'center center' });
-        gsap.set(repositoryCard, {
-            yPercent: 108,
-            scale: 0.96,
-            visibility: 'hidden',
-            transformOrigin: 'center center',
-        });
-
-        gsap.timeline({
-            scrollTrigger: {
-                trigger: stack,
-                start: 'top top',
-                end: () => `+=${Math.round(window.innerHeight * (window.innerWidth <= 760 ? 1.9 : 1.7))}`,
-                pin: stage,
-                pinSpacing: true,
-                scrub: 0.6,
-                anticipatePin: 1,
-                invalidateOnRefresh: true,
-            },
-        })
-            .to(podcastCard, {
-                y: -14,
+            const [podcastCard, repositoryCard] = cards;
+            stack.classList.add('is-scroll-enhanced');
+            gsap.set(podcastCard, { transformOrigin: 'center center' });
+            gsap.set(repositoryCard, {
+                yPercent: 108,
                 scale: 0.96,
-                duration: 0.22,
-                ease: 'none',
-            }, 0)
-            .to(repositoryCard, {
-                yPercent: 0,
-                visibility: 'visible',
-                duration: 0.48,
-                ease: 'none',
-            }, 0.12)
-            .to(repositoryCard, {
-                top: 0,
-                right: 0,
-                bottom: 0,
-                left: 0,
-            scale: 1,
-                borderRadius: 0,
-                borderWidth: 0,
-                duration: 0.4,
-                ease: 'none',
-            }, 0.6);
+                visibility: 'hidden',
+                transformOrigin: 'center center',
+            });
+
+            gsap.timeline({
+                scrollTrigger: {
+                    trigger: stack,
+                    start: 'top top',
+                    end: () => `+=${Math.round(window.innerHeight * (window.innerWidth <= 760 ? 1.9 : 1.7))}`,
+                    pin: stage,
+                    pinSpacing: true,
+                    scrub: 0.6,
+                    anticipatePin: 1,
+                    invalidateOnRefresh: true,
+                },
+            })
+                .to(podcastCard, {
+                    y: -14,
+                    scale: 0.96,
+                    duration: 0.22,
+                    ease: 'none',
+                }, 0)
+                .to(repositoryCard, {
+                    yPercent: 0,
+                    visibility: 'visible',
+                    duration: 0.48,
+                    ease: 'none',
+                }, 0.12)
+                .to(repositoryCard, {
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    left: 0,
+                    scale: 1,
+                    borderRadius: 0,
+                    borderWidth: 0,
+                    duration: 0.4,
+                    ease: 'none',
+                }, 0.6);
+        });
+        return () => featureStacks.forEach((stack) => stack.classList.remove('is-scroll-enhanced'));
     });
+
+    document.addEventListener('museotech:keyboard-navigation', () => featureStackMedia.revert(), { once: true });
 })();

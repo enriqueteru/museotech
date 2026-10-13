@@ -2,6 +2,14 @@
     const preloader = document.querySelector('[data-site-preloader]');
     if (!preloader) return;
 
+    const pageRegions = [...document.body.children].filter((element) =>
+        element !== preloader && !['SCRIPT', 'STYLE', 'LINK'].includes(element.tagName)
+    );
+    const originalInertState = new Map(pageRegions.map((element) => [element, element.inert]));
+    pageRegions.forEach((element) => {
+        element.inert = true;
+    });
+
     const percentage = preloader.querySelector('[data-site-preloader-percentage]');
     const assetCount = preloader.querySelector('[data-site-preloader-asset-count]');
     const startedAt = performance.now();
@@ -15,6 +23,9 @@
 
     const announcePreloaderHidden = () => {
         preloader.hidden = true;
+        pageRegions.forEach((element) => {
+            element.inert = originalInertState.get(element);
+        });
         window.dispatchEvent(new CustomEvent('museotech:preloader:hidden'));
     };
 

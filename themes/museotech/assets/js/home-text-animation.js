@@ -2,6 +2,7 @@
     const gsap = window.gsap;
     const scrollTrigger = window.ScrollTrigger;
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const animationRecords = [];
 
     if (!gsap || prefersReducedMotion) return;
     if (scrollTrigger) gsap.registerPlugin(scrollTrigger);
@@ -68,6 +69,7 @@
         const record = {
             complete: false,
             fades,
+            group,
             heading,
             lines: [],
             originalText,
@@ -75,8 +77,16 @@
             timeline: null,
             width: heading ? heading.getBoundingClientRect().width : 0,
         };
+        animationRecords.push(record);
 
         const buildTimeline = () => {
+            if (document.body.classList.contains('is-keyboard-navigation')) {
+                record.complete = true;
+                gsap.set([heading, ...fades].filter(Boolean), { clearProps: 'transform,opacity,visibility' });
+                notifyComplete();
+                return;
+            }
+
             if (heading) {
                 heading.replaceChildren(document.createTextNode(originalText));
                 record.lines = splitIntoLines(heading, originalText);
@@ -134,6 +144,18 @@
 
         buildTimeline();
 
+        // Visibility also changes when the mobile viewport expands or layout settles.
+        if (useScrollTrigger && 'IntersectionObserver' in window) {
+            const observer = new IntersectionObserver(([entry]) => {
+                if (!entry.isIntersecting) return;
+                observer.disconnect();
+                if (record.played) return;
+                record.timeline?.scrollTrigger?.kill(false, true);
+                record.timeline?.play();
+            }, { rootMargin: '0px 0px -4% 0px' });
+            observer.observe(group);
+        }
+
         if (heading && 'ResizeObserver' in window) {
             const resizeObserver = new ResizeObserver((entries) => {
                 const nextWidth = entries[0].contentRect.width;
@@ -171,10 +193,30 @@
             '.collaborators-page__empty',
         ].join(', '))) : [];
 
-    if (scrollTrigger && listingItems.length) gsap.set(listingItems, { autoAlpha: 0, y: 24 });
+    if (scrollTrigger && listingItems.length && !document.body.classList.contains('is-keyboard-navigation')) {
+        gsap.set(listingItems, { autoAlpha: 0, y: 24 });
+    }
 
     const initListingReveals = () => {
         if (!scrollTrigger || !listingItems.length) return;
+        if (document.body.classList.contains('is-keyboard-navigation')) {
+            gsap.set(listingItems, { autoAlpha: 1, clearProps: 'transform,opacity,visibility' });
+            return;
+        }
+
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+                const visible = entries.filter((entry) => entry.isIntersecting).map((entry) => entry.target);
+                visible.forEach((element) => observer.unobserve(element));
+                if (!visible.length) return;
+                gsap.to(visible, {
+                    autoAlpha: 1, y: 0, duration: 0.72, stagger: 0.12,
+                    ease: 'power2.out', overwrite: true,
+                });
+            }, { rootMargin: '0px 0px -4% 0px' });
+            listingItems.forEach((element) => observer.observe(element));
+            return;
+        }
 
         scrollTrigger.batch(listingItems, {
             start: 'top 92%',
@@ -346,8 +388,38 @@
         Promise.resolve(fontsReady).then(() => {
             initTextReveals();
             initCounters();
+            requestAnimationFrame(() => {
+                scrollTrigger?.refresh();
+                scrollTrigger?.update();
+            });
         });
     };
+
+    // A keyboard user must never land on content that is still transparent.
+    document.addEventListener('focusin', (event) => {
+        const group = event.target.closest('[data-reveal-group], [data-hero], .section-banner');
+        if (!gsap) return;
+        const listingItem = event.target.closest('.news-archive__grid > *, .news-archive__pagination, .news-archive__empty, .podcast-archive__episodes-header, .podcast-archive__grid > *, .podcast-archive__episodes > .navigation, .repository-archive__filters, .repository-archive__sidebar, .repository-archive__records > *, .collaborators-page__grid, .collaborators-page__list > .navigation');
+        if (listingItem) gsap.set(listingItem, { autoAlpha: 1, clearProps: 'transform,opacity,visibility' });
+        if (!group) return;
+        const title = group.matches('[data-hero]') ? '[data-hero-title]' : '.section-banner__title, [data-scroll-title]';
+        const fade = group.matches('[data-hero]') ? '[data-hero-fade]' : '.section-banner__eyebrow, .section-banner__description, nav, [data-scroll-fade]';
+        const record = animationRecords.find((item) => item.group === group);
+        if (record?.timeline && !record.complete) {
+            record.timeline.scrollTrigger?.kill(false, true);
+            record.timeline.progress(1).pause();
+            record.complete = true;
+            gsap.set([...record.lines, ...record.fades], { clearProps: 'transform,opacity,visibility' });
+        } else {
+            gsap.set(group.querySelectorAll(`${title}, ${fade}`), { clearProps: 'transform,opacity,visibility' });
+        }
+    });
+
+    document.addEventListener('museotech:keyboard-navigation', () => {
+        if (!gsap) return;
+        document.querySelectorAll('.news-archive__grid > *, .news-archive__pagination, .news-archive__empty, .podcast-archive__episodes-header, .podcast-archive__grid > *, .podcast-archive__episodes > .navigation, .repository-archive__filters, .repository-archive__sidebar, .repository-archive__records > *, .collaborators-page__grid, .collaborators-page__list > .navigation')
+            .forEach((element) => gsap.set(element, { autoAlpha: 1, clearProps: 'transform,opacity,visibility' }));
+    }, { once: true });
 
     const preloader = document.querySelector('[data-site-preloader]');
     if (!preloader || preloader.hidden) {
