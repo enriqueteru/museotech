@@ -25,6 +25,8 @@
     let currentIndex = 0;
     let profileAnimation = null;
     let profileClosing = false;
+    let transitionImage = null;
+    let titleLines = [];
 
     if (!members.length || !previous || !next || !name || !role) {
         return;
@@ -32,13 +34,10 @@
 
     const visibleClip = 'polygon(0% 100%, 100% 100%, 100% 0%, 0% 0%)';
     const hiddenClip = 'polygon(0 100%, 100% 100%, 100% 100%, 0% 100%)';
-    const hiddenTextClip = 'inset(100% 0% 0% 0%)';
-    const visibleTextClip = 'inset(0% 0% 0% 0%)';
-    const exitingTextClip = 'inset(0% 0% 100% 0%)';
-
+    const fullDialogClip = 'inset(0px 0px 0px 0px)';
+    const hiddenDialogClip = 'inset(100% 0px 0px 0px)';
     const getProfileRevealElements = (panel) => [
         panel?.querySelector('.team-profile-dialog__meta'),
-        panel?.querySelector('h3'),
         ...(panel?.querySelectorAll('.team-profile-dialog__bio p') || []),
         ...(panel?.querySelectorAll('.team-profile-dialog__resources a') || []),
         panel?.querySelector('.team-profile-dialog__link'),
@@ -50,27 +49,98 @@
         });
     });
 
+    const splitProfileTitle = (heading) => {
+        if (!heading) return [];
+        const original = heading.dataset.revealText || heading.textContent.trim().replace(/\s+/g, ' ');
+        heading.dataset.revealText = original;
+        heading.setAttribute('aria-label', original);
+        const words = original.split(' ').map((word) => {
+            const span = document.createElement('span');
+            span.className = 'team-profile-dialog__measure-word';
+            span.textContent = word;
+            return span;
+        });
+        heading.replaceChildren();
+        words.forEach((word, index) => {
+            heading.append(word);
+            if (index < words.length - 1) heading.append(document.createTextNode(' '));
+        });
+
+        const groups = [];
+        words.forEach((word) => {
+            const top = word.getBoundingClientRect().top;
+            let group = groups[groups.length - 1];
+            if (!group || Math.abs(group.top - top) > 1) {
+                group = { top, words: [] };
+                groups.push(group);
+            }
+            group.words.push(word.textContent);
+        });
+
+        heading.replaceChildren();
+        return groups.map((group) => {
+            const mask = document.createElement('span');
+            mask.className = 'team-profile-dialog__reveal-mask';
+            mask.setAttribute('aria-hidden', 'true');
+            const line = document.createElement('span');
+            line.className = 'team-profile-dialog__reveal-line';
+            line.textContent = group.words.join(' ');
+            mask.append(line);
+            heading.append(mask);
+            return line;
+        });
+    };
+
+    const imageRect = (image) => image?.getBoundingClientRect();
+    const clipAround = (rect) => {
+        const dialogRect = profileDialog.getBoundingClientRect();
+        return `inset(${Math.max(0, rect.top - dialogRect.top)}px ${Math.max(0, dialogRect.right - rect.right)}px ${Math.max(0, dialogRect.bottom - rect.bottom)}px ${Math.max(0, rect.left - dialogRect.left)}px)`;
+    };
+    const makeTransitionImage = (image, rect) => {
+        const clone = image.cloneNode(false);
+        clone.className = 'team-profile-dialog__transition-image';
+        clone.removeAttribute('srcset');
+        clone.removeAttribute('sizes');
+        clone.removeAttribute('loading');
+        clone.src = image.currentSrc || image.src;
+        clone.alt = '';
+        clone.setAttribute('aria-hidden', 'true');
+        clone.style.objectPosition = getComputedStyle(image).objectPosition;
+        Object.assign(clone.style, {
+            left: `${rect.left}px`,
+            top: `${rect.top}px`,
+            width: `${rect.width}px`,
+            height: `${rect.height}px`,
+        });
+        profileDialog.append(clone);
+        transitionImage = clone;
+        return clone;
+    };
+    const removeTransitionImage = () => {
+        transitionImage?.remove();
+        transitionImage = null;
+    };
+
     const thumbnailMotion = (() => {
         const strip = page.querySelector('.team-page__thumbnails');
         const track = strip?.querySelector('.team-page__thumbnail-track');
         if (!track || !thumbnails.length) return null;
 
-        const axes = ['x', 'y', 'rotation'];
+        const axes = ['x', 'y'];
         const bubbles = thumbnails.map((element) => ({
             element,
-            value: { x: 0, y: 0, rotation: 0 },
-            target: { x: 0, y: 0, rotation: 0 },
-            velocity: { x: 0, y: 0, rotation: 0 },
+            value: { x: 0, y: 0 },
+            target: { x: 0, y: 0 },
+            velocity: { x: 0, y: 0 },
         }));
         let selected = currentIndex;
-        let hovered = -1;
         let size = 58;
         let frame = 0;
         let lastTime = 0;
 
         const render = (bubble) => {
-            const { x, y, rotation } = bubble.value;
-            bubble.element.style.transform = `translate3d(${x.toFixed(3)}px, ${y.toFixed(3)}px, 0) rotate(${rotation.toFixed(3)}deg)`;
+            const { x, y } = bubble.value;
+            bubble.element.style.transform = `translate3d(${x.toFixed(3)}px, ${y.toFixed(3)}px, 0)`;
         };
 
         const settle = () => {
@@ -133,23 +203,19 @@
 
         const layout = (immediate = false) => {
             const edge = 16;
-            const stride = size * 0.68;
+            const stride = size + 8;
             const widthAvailable = strip.clientWidth;
             const centerY = (strip.clientHeight - size) / 2;
-            // Leave a real gap around the enlarged circle; the others overlap.
-            const selectedStride = size * 1.24;
+            const selectedStride = size + 14;
             let x = edge;
             bubbles.forEach((bubble, index) => {
                 if (index) x += index === selected || index - 1 === selected ? selectedStride : stride;
                 const active = index === selected;
-                const over = index === hovered;
-                const neighbor = hovered >= 0 && Math.abs(index - hovered) === 1 && !active;
                 bubble.target = {
-                    x: x + (neighbor ? Math.sign(index - hovered) * 3 : 0),
-                    y: centerY + (over ? -4 : 0),
-                    rotation: over ? (index % 2 ? -1.2 : 1.2) : 0,
+                    x,
+                    y: centerY,
                 };
-                bubble.element.style.zIndex = String(active ? bubbles.length + 2 : over ? bubbles.length + 1 : bubbles.length - Math.abs(index - selected));
+                bubble.element.style.zIndex = String(active ? 2 : 1);
             });
             const width = x + size + edge;
             const offset = Math.max(0, (widthAvailable - width) / 2);
@@ -179,18 +245,6 @@
         const resizeObserver = new ResizeObserver(resize);
         resizeObserver.observe(strip);
 
-        strip.addEventListener('pointermove', (event) => {
-            if (event.pointerType !== 'mouse' || !finePointer.matches) return;
-            const index = thumbnails.indexOf(event.target.closest('.team-page__thumbnail'));
-            if (hovered === index) return;
-            hovered = index;
-            layout();
-        });
-        strip.addEventListener('pointerleave', () => {
-            if (hovered === -1) return;
-            hovered = -1;
-            layout();
-        });
         reducedMotion.addEventListener('change', animate);
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
@@ -204,11 +258,7 @@
 
         return {
             select(index) {
-                if (index !== selected && !reducedMotion.matches) {
-                    bubbles[index].velocity.y -= size * 0.35;
-                }
                 selected = index;
-                hovered = -1;
                 layout();
                 revealSelected();
             },
@@ -218,6 +268,10 @@
     const updateInfo = () => {
         name.textContent = members[currentIndex].name;
         role.textContent = members[currentIndex].role;
+        const selectedImage = images[currentIndex]?.querySelector('img');
+        const selectedProfileImage = profilePanels[currentIndex]?.querySelector('.team-profile-dialog__image img');
+        if (selectedImage) selectedImage.loading = 'eager';
+        if (selectedProfileImage) selectedProfileImage.loading = 'eager';
         previous.disabled = currentIndex === 0;
         next.disabled = currentIndex === members.length - 1;
         profileTrigger?.setAttribute(
@@ -300,6 +354,8 @@
             return;
         }
 
+        const sourceImage = images[currentIndex]?.querySelector('img');
+        const sourceRect = imageRect(sourceImage);
         profilePanels.forEach((panel, index) => {
             panel.hidden = index !== currentIndex;
         });
@@ -308,35 +364,61 @@
 
         const activePanel = profilePanels[currentIndex];
         const activeImage = activePanel?.querySelector('.team-profile-dialog__image img');
-        const activeContent = activePanel?.querySelector('.team-profile-dialog__content');
-        const revealElements = getProfileRevealElements(activePanel);
+        if (activeImage) activeImage.loading = 'eager';
+        const targetRect = imageRect(activeImage);
+        const heading = activePanel?.querySelector('h3');
+        const fades = getProfileRevealElements(activePanel);
         profileAnimation?.kill();
 
         if (window.gsap && !reducedMotion.matches && profileShell) {
-            window.gsap.set(profileShell, { clipPath: hiddenClip });
-            window.gsap.set(activeImage, { scale: 1.035 });
-            window.gsap.set(activeContent, { opacity: 1, y: 0 });
-            window.gsap.set(revealElements, { clipPath: hiddenTextClip, y: 14 });
+            const canMorph = sourceRect && targetRect && sourceRect.width && targetRect.width;
+            titleLines = splitProfileTitle(heading);
+            window.gsap.set(profileShell, { clipPath: canMorph ? clipAround(sourceRect) : hiddenDialogClip });
+            window.gsap.set(titleLines, { yPercent: 110 });
+            window.gsap.set(fades, { autoAlpha: 0, y: 12 });
             window.gsap.set(profileClose, { opacity: 0, scale: 0.88 });
+            if (canMorph) {
+                activeImage.style.visibility = 'hidden';
+                makeTransitionImage(sourceImage, sourceRect);
+            }
 
             profileAnimation = window.gsap.timeline({
                 onComplete: () => {
-                    window.gsap.set([activeImage, activeContent, profileClose], { clearProps: 'transform,opacity' });
-                    window.gsap.set(revealElements, { clearProps: 'transform' });
+                    if (activeImage) activeImage.style.visibility = '';
+                    removeTransitionImage();
+                    window.gsap.set(profileShell, { clearProps: 'clipPath' });
+                    window.gsap.set(titleLines, { clearProps: 'transform' });
+                    window.gsap.set(fades, { clearProps: 'transform,opacity,visibility' });
+                    window.gsap.set(profileClose, { clearProps: 'transform,opacity' });
                     profileAnimation = null;
                 },
             });
             profileAnimation
-                .to(profileShell, { clipPath: visibleClip, duration: 0.72, ease: 'power4.out' })
-                .to(activeImage, { scale: 1, duration: 0.9, ease: 'power3.out' }, 0)
-                .to(revealElements, {
-                    clipPath: visibleTextClip,
-                    y: 0,
-                    duration: 0.56,
+                .to(profileShell, { clipPath: fullDialogClip, duration: 0.82, ease: 'power2.inOut' }, 0)
+                .to(titleLines, {
+                    yPercent: 0,
+                    duration: 0.88,
                     ease: 'power3.out',
-                    stagger: 0.045,
-                }, 0.14)
-                .to(profileClose, { opacity: 1, scale: 1, duration: 0.34, ease: 'power2.out' }, 0.28);
+                    stagger: 0.1,
+                }, 0.38)
+                .to(fades, {
+                    autoAlpha: 1,
+                    y: 0,
+                    duration: 0.68,
+                    stagger: 0.1,
+                    ease: 'power2.out',
+                }, 0.5)
+                .to(profileClose, { opacity: 1, scale: 1, duration: 0.34, ease: 'power2.out' }, 0.5);
+            if (canMorph) {
+                profileAnimation.to(transitionImage, {
+                    left: targetRect.left,
+                    top: targetRect.top,
+                    width: targetRect.width,
+                    height: targetRect.height,
+                    duration: 0.82,
+                    ease: 'power2.inOut',
+                }, 0);
+            }
         }
 
         profileClose?.focus();
@@ -348,11 +430,17 @@
         }
 
         const finishClosing = () => {
+            const activeImage = profilePanels[currentIndex]?.querySelector('.team-profile-dialog__image img');
+            if (activeImage) activeImage.style.visibility = '';
+            removeTransitionImage();
             profileDialog.close();
             profileClosing = false;
             profileAnimation = null;
             if (window.gsap) {
                 window.gsap.set(profileShell, { clearProps: 'clipPath' });
+                window.gsap.set(titleLines, { clearProps: 'transform' });
+                window.gsap.set(getProfileRevealElements(profilePanels[currentIndex]), { clearProps: 'transform,opacity,visibility' });
+                window.gsap.set(profileClose, { clearProps: 'transform,opacity' });
             }
             profileTrigger?.focus({ preventScroll: true });
         };
@@ -366,19 +454,41 @@
         profileAnimation?.kill();
         const activePanel = profilePanels[currentIndex];
         const activeImage = activePanel?.querySelector('.team-profile-dialog__image img');
-        const revealElements = getProfileRevealElements(activePanel);
+        const sourceImage = images[currentIndex]?.querySelector('img');
+        const sourceRect = imageRect(sourceImage);
+        const targetRect = imageRect(activeImage);
+        const fades = getProfileRevealElements(activePanel);
+        const canMorph = sourceRect && targetRect && sourceRect.width && targetRect.width;
+        if (canMorph && !transitionImage) makeTransitionImage(activeImage, targetRect);
+        if (canMorph) activeImage.style.visibility = 'hidden';
+        if (!profileShell.style.clipPath) window.gsap.set(profileShell, { clipPath: fullDialogClip });
         profileAnimation = window.gsap.timeline({ onComplete: finishClosing });
         profileAnimation
-            .to(revealElements, {
-                clipPath: exitingTextClip,
-                y: -8,
+            .to(titleLines, {
+                yPercent: -110,
+                duration: 0.42,
+                ease: 'power2.in',
+                stagger: 0.035,
+            }, 0)
+            .to(fades, {
+                autoAlpha: 0,
+                y: -12,
                 duration: 0.36,
                 ease: 'power2.in',
                 stagger: 0.025,
-            })
-            .to(profileShell, { clipPath: hiddenClip, duration: 0.68, ease: 'power3.inOut' }, 0.08)
-            .to(activeImage, { scale: 1.02, duration: 0.68, ease: 'power3.inOut' }, 0.08)
-            .to(profileClose, { opacity: 0, scale: 0.9, duration: 0.32, ease: 'power2.in' }, 0.04);
+            }, 0)
+            .to(profileShell, { clipPath: canMorph ? clipAround(sourceRect) : hiddenDialogClip, duration: 0.76, ease: 'power2.inOut' }, 0)
+            .to(profileClose, { opacity: 0, scale: 0.9, duration: 0.32, ease: 'power2.in' }, 0);
+        if (canMorph) {
+            profileAnimation.to(transitionImage, {
+                left: sourceRect.left,
+                top: sourceRect.top,
+                width: sourceRect.width,
+                height: sourceRect.height,
+                duration: 0.76,
+                ease: 'power2.inOut',
+            }, 0);
+        }
     };
 
     const updateCursor = (clientX) => {
