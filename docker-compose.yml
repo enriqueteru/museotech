@@ -16,7 +16,9 @@ services:
       retries: 10
 
   wordpress:
-    image: wordpress:php8.2-apache
+    build:
+      context: .
+      dockerfile: docker/wordpress.Dockerfile
     restart: unless-stopped
     depends_on:
       db:

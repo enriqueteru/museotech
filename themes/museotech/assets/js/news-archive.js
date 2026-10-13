@@ -1,9 +1,8 @@
 (() => {
     const archive = document.querySelector('.news-archive');
-    const grid = archive?.querySelector('.news-archive__grid');
     const status = archive?.querySelector('.news-archive__status');
 
-    if (!archive || !grid || !status || !window.fetch || !window.DOMParser) {
+    if (!archive || !status || !window.fetch || !window.DOMParser) {
         return;
     }
 
@@ -42,8 +41,9 @@
 
     archive.addEventListener('click', async (event) => {
         const link = event.target.closest('.news-archive__pagination a');
+        const grid = archive.querySelector('.news-archive__grid');
 
-        if (!link || isLoading || link.getAttribute('aria-disabled') === 'true') {
+        if (!link || !grid || isLoading || link.getAttribute('aria-disabled') === 'true') {
             return;
         }
 
@@ -57,21 +57,31 @@
         status.textContent = 'Cargando artículos…';
 
         try {
-            const response = await fetch(link.href, {
+            const fragmentUrl = new URL(link.href);
+            fragmentUrl.searchParams.set('museotech_archive_fragment', '1');
+            const response = await fetch(fragmentUrl, {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' },
                 credentials: 'same-origin',
             });
 
-            if (!response.ok) {
+            if (!response.ok || response.headers.get('X-Museotech-Archive-Fragment') !== '1') {
                 throw new Error(`HTTP ${response.status}`);
             }
 
             const incomingDocument = new DOMParser().parseFromString(await response.text(), 'text/html');
+            incomingDocument.querySelectorAll('a[href]').forEach((anchor) => {
+                const href = anchor.getAttribute('href');
+                if (!href.includes('museotech_archive_fragment')) return;
+                const cleanUrl = new URL(href, window.location.href);
+                cleanUrl.searchParams.delete('museotech_archive_fragment');
+                anchor.href = cleanUrl.href;
+            });
             const incomingGrid = incomingDocument.querySelector('.news-archive__grid');
 
             if (!incomingGrid) {
                 throw new Error('No se encontró la rejilla de artículos.');
             }
+            if (!grid.isConnected) return;
 
             const incomingCards = Array.from(incomingGrid.querySelectorAll('.news-archive-card'));
 
@@ -98,7 +108,7 @@
             }
         } catch (error) {
             link.textContent = originalText;
-            status.textContent = 'No se han podido cargar los artículos. Inténtalo de nuevo.';
+            if (grid.isConnected) status.textContent = 'No se han podido cargar los artículos. Inténtalo de nuevo.';
         } finally {
             isLoading = false;
             link.classList.remove('is-loading');

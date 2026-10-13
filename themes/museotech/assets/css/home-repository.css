@@ -29,23 +29,16 @@
 }
 
 .home-repository__model {
-    position: relative;
+    position: absolute;
     z-index: 1;
-    width: min(100%, 720px);
+    top: 50%;
+    left: 50%;
+    width: min(155%, 820px);
     aspect-ratio: 1;
-    cursor: grab;
-    touch-action: pan-y;
+    pointer-events: none;
     user-select: none;
     -webkit-user-select: none;
-}
-
-.home-repository__model.is-dragging {
-    cursor: grabbing;
-}
-
-.home-repository__model:focus-visible {
-    outline: 2px solid currentColor;
-    outline-offset: 4px;
+    transform: translate(-50%, -50%);
 }
 
 .home-repository__model canvas {
@@ -74,6 +67,6 @@
     }
 
     .home-repository__model {
-        width: min(100%, 700px);
+        width: min(155%, 650px);
     }
 }

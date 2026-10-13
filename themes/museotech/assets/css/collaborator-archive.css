@@ -5,7 +5,7 @@ body.post-type-archive-colaborador {
     --collaborator-muted: var(--brand-muted);
     --collaborator-focus: var(--brand-ink);
     margin: 0;
-    background: var(--collaborator-paper);
+    background: var(--brand-surface);
     color: var(--collaborator-ink);
     font-family: var(--font-satoshi);
 }
@@ -44,11 +44,10 @@ body.post-type-archive-colaborador {
 
 .collaborators-page__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 320px));
-    justify-content: center;
-    align-items: start;
-    column-gap: clamp(28px, 4vw, 56px);
-    row-gap: clamp(48px, 6vw, 76px);
+    width: min(100%, 1120px);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(14px, 2vw, 24px);
+    margin-inline: auto;
 }
 
 .collaborator-card {
@@ -58,11 +57,26 @@ body.post-type-archive-colaborador {
 .collaborator-card__link {
     display: grid;
     width: 100%;
-    min-height: 150px;
+    height: 100%;
+    min-height: 170px;
     place-items: center;
+    padding: 28px;
+    border: 1px solid var(--brand-border);
+    border-radius: 16px;
+    background: var(--collaborator-paper);
     color: var(--collaborator-ink);
     cursor: pointer;
     text-decoration: none;
+}
+
+.collaborator-card--join .collaborator-card__link {
+    background: #f0f0ee;
+}
+
+.collaborator-card__join-icon {
+    display: block;
+    width: 28px;
+    height: 28px;
 }
 
 .collaborator-card__image {
@@ -70,7 +84,7 @@ body.post-type-archive-colaborador {
     width: auto;
     height: auto;
     max-width: 100%;
-    max-height: 145px;
+    max-height: 112px;
     object-fit: contain;
 }
 
@@ -101,26 +115,34 @@ body.post-type-archive-colaborador {
     font-size: 18px;
 }
 
-@media (max-width: 600px) {
-    .collaborators-page__banner-inner {
-        padding: 122px 22px 42px;
+@media (max-width: 900px) {
+    .collaborators-page__grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
+}
 
+@media (max-width: 600px) {
     .collaborators-page__list {
         padding: 40px 18px 72px;
     }
 
     .collaborators-page__grid {
-        grid-template-columns: minmax(0, 320px);
-        row-gap: 40px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
     }
 
     .collaborator-card__link {
-        min-height: 132px;
+        min-height: 120px;
+        padding: 16px;
     }
 
     .collaborator-card__image {
-        max-height: 124px;
+        max-height: 86px;
+    }
+
+    .collaborator-card__join-icon {
+        width: 24px;
+        height: 24px;
     }
 }
 

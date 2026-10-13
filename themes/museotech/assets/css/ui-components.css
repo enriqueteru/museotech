@@ -1,3 +1,16 @@
+.screen-reader-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+}
+
+[data-archive-results] {
+    scroll-margin-top: 100px;
+}
+
 .ui-button.ui-button,
 .pagination .page-numbers.page-numbers {
     display: inline-flex;

@@ -19,6 +19,8 @@
 }
 
 .team-page {
+    --team-header-height: 84px;
+    --team-image-height: min(540px, max(240px, calc(100svh - var(--team-header-height) - 200px)));
     position: relative;
     width: 100vw;
     height: 100vh;
@@ -87,7 +89,7 @@
 .team-page__modal {
     position: absolute;
     z-index: 30;
-    top: 50%;
+    top: calc(50% + var(--team-header-height) / 2);
     left: 50%;
     width: 500px;
     height: auto;
@@ -98,7 +100,7 @@
 .team-page__images,
 .team-page__image {
     width: 100%;
-    height: 540px;
+    height: var(--team-image-height);
 }
 
 .team-page__images {
@@ -139,7 +141,7 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: 540px;
+    height: var(--team-image-height);
     padding: 0;
     border: 0;
     background: transparent;
@@ -552,6 +554,10 @@
 }
 
 @media (max-width: 900px) {
+    .team-page {
+        --team-image-height: min(470px, calc(100svh - var(--team-header-height) - 238px));
+    }
+
     .team-page__cursor {
         display: none;
     }
@@ -563,15 +569,6 @@
     .team-page__modal {
         width: min(400px, calc(100vw - 40px));
         height: auto;
-    }
-
-    .team-page__images,
-    .team-page__image {
-        height: min(470px, calc(100svh - 310px));
-    }
-
-    .team-page__profile-trigger {
-        height: min(470px, calc(100svh - 310px));
     }
 
     .team-page__thumbnails {
@@ -633,6 +630,12 @@
     .team-profile-dialog__resources {
         grid-template-columns: 1fr;
         margin-top: 28px;
+    }
+}
+
+@media (max-width: 700px) {
+    .team-page {
+        --team-header-height: 72px;
     }
 }
 

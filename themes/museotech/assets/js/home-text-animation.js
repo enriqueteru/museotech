@@ -163,9 +163,10 @@
             '.podcast-archive__grid > *',
             '.podcast-archive__episodes > .navigation',
             '.podcast-archive__empty',
+            '.repository-archive__filters',
             '.repository-archive__sidebar',
             '.repository-archive__records > *',
-            '.collaborators-page__grid > *',
+            '.collaborators-page__grid',
             '.collaborators-page__list > .navigation',
             '.collaborators-page__empty',
         ].join(', '))) : [];

@@ -1,100 +1,43 @@
-/* Shared heading hierarchy for editorial section banners. */
+/* Content-led archive banners: a compact introduction before the listing. */
 .section-banner {
-    padding-block-start: clamp(250px, 30vh, 280px);
+    --type-heading-size: clamp(48px, 5.4vw, 80px);
+    --type-heading-size-mobile: clamp(36px, 10vw, 54px);
+    --type-heading-line-height: 1;
+    --type-heading-line-height-mobile: 1.05;
+    --archive-banner-top: clamp(160px, calc(84px + 10svh), 205px);
+
+    box-sizing: border-box;
+    display: grid;
+    min-height: clamp(300px, 38svh, 420px);
+    place-items: center;
+    padding: var(--archive-banner-top) clamp(20px, 5vw, 80px) clamp(70px, 9vh, 100px);
+    border-bottom: 1px solid rgb(17 17 17 / 8%);
+    background: var(--brand-paper);
 }
 
-.news-archive__header,
-.podcast-archive__header,
-.repository-archive__intro,
-.collaborators-page__banner-inner {
-    position: relative;
-    min-height: clamp(360px, 32vw, 480px);
-    isolation: isolate;
+/* These archive styles also set banner padding; keep one consistent height. */
+.news-archive .news-archive__header,
+.podcast-archive .podcast-archive__header,
+.repository-archive .repository-archive__intro,
+.collaborators-page .collaborators-page__banner {
+    min-height: clamp(300px, 38svh, 420px);
+    padding: var(--archive-banner-top) clamp(20px, 5vw, 80px) clamp(70px, 9vh, 100px);
 }
 
-.section-banner__copy {
-    position: absolute;
-    z-index: 2;
-    bottom: clamp(40px, 5vh, 60px);
-    right: 0;
-    left: 0;
+.collaborators-page .collaborators-page__banner-inner {
+    width: min(100%, 1040px);
+    min-height: 0;
+    padding: 0;
+}
+
+.section-banner .section-banner__copy {
+    position: static;
     width: min(100%, 1040px);
     margin: 0 auto;
-    padding-inline: clamp(20px, 5vw, 80px);
+    padding: 0;
+    color: var(--brand-ink);
     text-align: center;
-}
-
-.section-banner__copy .section-banner__title {
-    margin: 0 auto;
-}
-
-.section-banner__copy .section-banner__description {
-    margin-top: clamp(12px, 2vw, 30px);
-}
-
-.news-archive__header {
-    margin-bottom: 0;
-}
-
-.news-archive__filters {
-    margin: 30px auto clamp(40px, 5vh, 64px);
-}
-
-.repository-archive__filters {
-    margin: 0 auto clamp(32px, 4vh, 52px);
-}
-
-.news-archive__header > .blog-banner-model,
-.podcast-archive__header > .podcast-banner-model,
-.repository-archive__intro > .repository-banner-model,
-.collaborators-page__banner-inner > .collaborator-banner-model {
-    position: absolute;
-    z-index: 1;
-    top: 50%;
-    left: 50%;
-    right: auto;
-    width: min(100%, 840px);
-    height: clamp(320px, 30vw, 460px);
-    margin: 0;
-    opacity: 0.42;
-    transform: translate(calc(-50% + var(--model-offset-x, 0px)), calc(-50% + var(--model-offset-y, 0px)));
-}
-
-@media (max-width: 760px) {
-    .news-archive__header,
-    .podcast-archive__header,
-    .repository-archive__intro,
-    .collaborators-page__banner-inner {
-        min-height: clamp(300px, 80vw, 380px);
-    }
-
-    .news-archive__filters {
-        margin: 30px -18px clamp(40px, 5vh, 56px);
-    }
-
-    .news-archive__header .section-banner__copy {
-        position: relative;
-        inset: auto;
-        width: 100%;
-        margin: 0 auto;
-        padding: 0;
-    }
-
-    .news-archive__header > .blog-banner-model,
-    .podcast-archive__header > .podcast-banner-model,
-    .repository-archive__intro > .repository-banner-model,
-    .collaborators-page__banner-inner > .collaborator-banner-model {
-        width: min(100%, 440px);
-        height: clamp(260px, 78vw, 380px);
-    }
-}
-
-.collaborators-page__banner.section-banner {
-    padding-block-start: 0;
-}
-
-.collaborators-page__banner-inner {
-    padding-block-start: clamp(250px, 30vh, 280px);
+    transform: none;
 }
 
 .section-banner .section-banner__title {
@@ -104,33 +47,30 @@
     font-size: var(--type-heading-size);
     font-weight: 400;
     letter-spacing: -0.06em;
-    line-height: var(--type-heading-line-height);
+    line-height: 0.98;
     text-transform: none;
     text-wrap: balance;
-}
-
-.section-banner .section-banner__eyebrow {
-    margin: 0 0 14px;
-    color: var(--brand-muted);
-    font-family: var(--font-satoshi);
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    line-height: 1.3;
-    text-transform: uppercase;
 }
 
 .section-banner .section-banner__description {
-    width: min(100%, 800px);
-    margin: 30px auto 0;
+    width: min(100%, 68ch);
+    margin: clamp(18px, 2vw, 26px) auto 0;
     color: var(--brand-copy);
     font-family: var(--font-satoshi);
-    font-size: var(--type-body-size);
+    font-size: clamp(16px, 1.2vw, 18px);
     font-weight: 400;
     letter-spacing: normal;
-    line-height: var(--type-body-line-height);
+    line-height: 1.5;
     text-transform: none;
-    text-wrap: balance;
+    text-wrap: pretty;
+}
+
+.news-archive__header {
+    margin-bottom: 0;
+}
+
+.news-archive__filters {
+    margin: 24px auto clamp(40px, 5vh, 64px);
 }
 
 .home-text-animation__measure-word {
@@ -152,32 +92,34 @@
 }
 
 @media (max-width: 760px) {
-    .home-text-animation__line {
-        font-size: clamp(28px, 7.5vw, 46px);
-    }
-
-    .section-banner {
-        padding-block-start: clamp(96px, 14vh, 118px);
-    }
-
-    .collaborators-page__banner-inner {
-        padding-block-start: clamp(96px, 14vh, 118px);
+    .section-banner,
+    .news-archive .news-archive__header,
+    .podcast-archive .podcast-archive__header,
+    .repository-archive .repository-archive__intro,
+    .collaborators-page .collaborators-page__banner {
+        --archive-banner-top: clamp(182px, calc(72px + 12svh), 220px);
+        min-height: clamp(260px, 36svh, 340px);
+        /* Includes clearance for the fixed site header (72px on phones). */
+        padding: var(--archive-banner-top) 18px clamp(64px, 8svh, 88px);
     }
 
     .section-banner .section-banner__title {
         font-size: var(--type-heading-size-mobile);
-        line-height: var(--type-heading-line-height-mobile);
+        line-height: 1;
     }
 
     .section-banner .section-banner__description {
-        margin-top: 30px;
-        font-size: var(--type-body-size-mobile);
-        line-height: var(--type-body-line-height-mobile);
+        margin-top: 18px;
+        font-size: 16px;
+        line-height: 1.5;
     }
 
-    .section-banner .section-banner__eyebrow {
-        margin-bottom: 14px;
-        font-size: 11px;
+    .home-text-animation__line {
+        font-size: inherit;
+    }
+
+    .news-archive__filters {
+        margin: 24px -18px clamp(40px, 5vh, 56px);
     }
 }
 

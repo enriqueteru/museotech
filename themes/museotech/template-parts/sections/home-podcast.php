@@ -19,7 +19,7 @@
             </div>
             <?php if (is_file($podcast_model_path)) : ?>
                 <div class="home-podcast__visual">
-                    <div class="home-podcast__model" data-home-podcast-model data-model-src="<?php echo esc_url($podcast_model_url); ?>" data-model-meshopt="true" role="group" tabindex="0" aria-label="<?php esc_attr_e('Modelo 3D interactivo. Arrástralo para girarlo o usa las flechas.', 'museotech'); ?>"></div>
+                    <div class="home-podcast__model" data-home-podcast-model data-model-src="<?php echo esc_url($podcast_model_url); ?>" data-model-meshopt="true" aria-hidden="true"></div>
                 </div>
             <?php endif; ?>
         </div>

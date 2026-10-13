@@ -19,7 +19,7 @@
             </div>
             <?php if (is_file($repository_model_path)) : ?>
                 <div class="home-repository__visual">
-                    <div class="home-repository__model" data-home-repository-model data-model-src="<?php echo esc_url($repository_model_url); ?>" data-model-meshopt="true" role="group" tabindex="0" aria-label="<?php esc_attr_e('Modelo 3D interactivo. Arrástralo para girarlo o usa las flechas.', 'museotech'); ?>"></div>
+                    <div class="home-repository__model" data-home-repository-model data-model-src="<?php echo esc_url($repository_model_url); ?>" data-model-meshopt="true" aria-hidden="true"></div>
                 </div>
             <?php endif; ?>
         </div>

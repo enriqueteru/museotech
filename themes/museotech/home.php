@@ -1,4 +1,12 @@
 <?php
+if (isset($_GET['museotech_archive_fragment'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+    nocache_headers();
+    header('Content-Type: text/html; charset=' . get_bloginfo('charset'));
+    header('X-Museotech-Archive-Fragment: 1');
+    get_template_part('template-parts/archive/news-results');
+    return;
+}
+
 get_header();
 
 $blog_page_id = (int) get_option('page_for_posts');
@@ -14,7 +22,7 @@ foreach (['museos', 'ia', 'arte', 'tecnologia', 'patrimonio'] as $category_slug)
     }
 }
 ?>
-<main id="main-content" class="news-archive">
+<main id="main-content" class="news-archive" data-archive-base="<?php echo esc_url($blog_url); ?>">
     <header class="news-archive__header section-banner">
         <div class="section-banner__copy">
             <h1 class="section-banner__title"><?php esc_html_e('Todos los artículos', 'museotech'); ?></h1>
@@ -22,15 +30,6 @@ foreach (['museos', 'ia', 'arte', 'tecnologia', 'patrimonio'] as $category_slug)
                 <p class="section-banner__description"><?php echo esc_html($archive_description); ?></p>
             <?php endif; ?>
         </div>
-        <?php get_template_part('template-parts/components/podcast-banner-model', null, [
-            'model_path' => 'assets/models/blog-pluma.glb',
-            'meshopt_compressed' => true,
-            'component_class' => 'blog-banner-model',
-            'model_scale' => 1.05,
-            'rotation_speed' => 0.2,
-            'model_rotation_z' => 48,
-            'aria_label' => __('Pluma 3D interactiva. Arrástrala o usa las flechas para girarla; el giro automático respeta las preferencias de movimiento.', 'museotech'),
-        ]); ?>
     </header>
 
     <nav class="news-archive__filters" aria-label="<?php esc_attr_e('Filtrar artículos por tema', 'museotech'); ?>">
@@ -42,25 +41,9 @@ foreach (['museos', 'ia', 'arte', 'tecnologia', 'patrimonio'] as $category_slug)
         <?php endforeach; ?>
     </nav>
 
-    <?php if (have_posts()) : ?>
-        <div class="news-archive__grid">
-            <?php while (have_posts()) : the_post(); ?>
-                <?php get_template_part('template-parts/content/news', 'card'); ?>
-            <?php endwhile; ?>
-        </div>
-        <?php $previous_link = get_previous_posts_link(__('Artículos anteriores', 'museotech')); ?>
-        <?php $next_link = get_next_posts_link(__('Ver más artículos', 'museotech')); ?>
-        <?php $previous_link = $previous_link ? str_replace('<a ', '<a class="ui-button" ', $previous_link) : ''; ?>
-        <?php $next_link = $next_link ? str_replace('<a ', '<a class="ui-button" ', $next_link) : ''; ?>
-        <?php if ($previous_link || $next_link) : ?>
-            <nav class="news-archive__pagination" aria-label="<?php esc_attr_e('Paginación de artículos', 'museotech'); ?>">
-                <?php if ($previous_link) : ?><span class="news-archive__pagination-previous"><?php echo $previous_link; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span><?php endif; ?>
-                <?php if ($next_link) : ?><span class="news-archive__pagination-next"><?php echo $next_link; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span><?php endif; ?>
-            </nav>
-        <?php endif; ?>
-        <p class="news-archive__status" role="status" aria-live="polite"></p>
-    <?php else : ?>
-        <p class="news-archive__empty"><?php esc_html_e('No hay artículos disponibles para este tema.', 'museotech'); ?></p>
-    <?php endif; ?>
+    <div class="news-archive__results" data-archive-results>
+        <?php get_template_part('template-parts/archive/news-results'); ?>
+    </div>
+    <p class="news-archive__status" role="status" aria-live="polite"></p>
 </main>
 <?php get_footer(); ?>

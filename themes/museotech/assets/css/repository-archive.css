@@ -6,8 +6,8 @@
     --repository-blue-soft: var(--brand-surface);
     --repository-green: var(--brand-ink);
     --repository-green-soft: var(--brand-surface);
-    --repository-surface: var(--brand-surface);
-    background: var(--brand-paper);
+    --repository-surface: var(--brand-paper);
+    background: var(--brand-surface);
     color: var(--repository-ink);
     padding: 0 0 clamp(72px, 8vw, 112px);
 }
@@ -19,9 +19,9 @@
 
 .repository-archive__layout {
     display: grid;
-    grid-template-areas: "records sidebar";
+    grid-template-areas: "filters sidebar" "records sidebar";
     grid-template-columns: minmax(0, 2.2fr) minmax(290px, 1fr);
-    gap: 28px 36px;
+    gap: 0 36px;
     align-items: start;
     max-width: 1608px;
     padding: 42px clamp(20px, 6vw, 92px) 0;
@@ -37,11 +37,13 @@
 }
 
 .repository-archive__filters {
+    grid-area: filters;
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 8px;
-    margin-top: clamp(36px, 5vh, 54px);
+    min-width: 0;
+    margin: 0 0 clamp(18px, 2vw, 28px);
 }
 
 .repository-archive__filter {
@@ -140,7 +142,6 @@
 .repository-archive__records {
     grid-area: records;
     min-width: 0;
-    border-top: 1px solid var(--repository-border);
 }
 
 .repository-record {
@@ -293,9 +294,9 @@
 
 @media (max-width: 900px) {
     .repository-archive__layout {
-        grid-template-areas: "records" "sidebar";
+        grid-template-areas: "filters" "records" "sidebar";
         grid-template-columns: minmax(0, 1fr);
-        gap: 24px;
+        gap: 0;
         max-width: 760px;
         padding: 32px 20px 0;
     }
@@ -303,15 +304,15 @@
     .repository-archive__contribute {
         max-width: none;
     }
+
+    .repository-archive__sidebar {
+        margin-top: 24px;
+    }
 }
 
 @media (max-width: 640px) {
     .repository-archive {
         padding: 0 0 72px;
-    }
-
-    .repository-archive__intro {
-        padding: 122px 18px 42px;
     }
 
     .repository-archive__layout {
@@ -321,7 +322,6 @@
     .repository-archive__filters {
         flex-wrap: nowrap;
         gap: 8px;
-        margin-top: 30px;
         overflow-x: auto;
         padding: 1px 2px 8px;
         scrollbar-width: none;
